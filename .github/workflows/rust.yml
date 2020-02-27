@@ -15,4 +15,4 @@ jobs:
       - name: Build
         run: cd server && cargo +nightly build --verbose
       - name: Run tests
-        run: cargo +nightly test --verbose
+        run: cd server && cargo +nightly test --verbose
