@@ -1,0 +1,2 @@
+[global.databases]
+postgres = { url = "postgres://setlist:jFq[!wBd;uB;khYTc2@localhost/setlist" }
