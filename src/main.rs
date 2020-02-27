@@ -4,16 +4,16 @@
 extern crate rocket;
 
 use setlist_app::fns::show_setlists;
-use setlist_app::PostgresConn;
+use setlist_app::resources::db::PostgresConn;
 
 #[get("/")]
-fn index() -> &'static str {
+fn index(connection: PostgresConn) -> () {
     show_setlists(connection);
 }
 
 fn main() {
     rocket::ignite()
         .mount("/", routes![index])
-        .attach(PostgresConn::faring())
+        .attach(PostgresConn::fairing())
         .launch();
 }
