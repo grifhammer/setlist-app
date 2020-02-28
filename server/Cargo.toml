@@ -9,6 +9,7 @@ default-run = "setlist-app"
 
 [dependencies]
 rocket = "0.4.2"
+rocket_cors = { version = "0.5.1", default-features = false }
 diesel = {version = "1.4.3", features = ["postgres"]}
 dotenv = "0.15.0"
 reqwest = "0.10.3"
