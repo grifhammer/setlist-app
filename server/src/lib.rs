@@ -2,6 +2,7 @@
 extern crate diesel;
 extern crate dotenv;
 extern crate rocket_contrib;
+extern crate serde;
 
 pub mod fns;
 pub mod models;

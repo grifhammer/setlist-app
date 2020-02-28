@@ -2,7 +2,7 @@ use super::models::*;
 use super::resources::db::PostgresConn;
 use super::*;
 use diesel::prelude::*;
-pub fn show_setlists(connection: PostgresConn) {
+pub fn show_setlists(connection: PostgresConn) -> Vec<Setlist> {
     use super::schema::setlists::dsl::*;
 
     let results = setlists
@@ -11,7 +11,8 @@ pub fn show_setlists(connection: PostgresConn) {
         .load::<Setlist>(&*connection)
         .expect("Error loading posts");
 
-    for setlist in results {
+    for setlist in &results {
         println!("{}, {}", setlist.id, setlist.title);
     }
+    results
 }
