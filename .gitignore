@@ -1,2 +1,3 @@
 /server/target
 /server/.env
+/server/Rocket.toml
