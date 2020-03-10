@@ -1,17 +1,28 @@
-use reqwest::Client;
-use rocket::fairing::{Fairing, Info, Kind};
-use rocket::request::{self, FromRequest, Outcome, Request};
+use crate::models::*;
+use reqwest::{Client, Response};
 use serde::Deserialize;
+use std::fmt;
 
 static SETLIST_FM_URL: &str = "https://api.setlist.fm/rest/1.0/";
 
 #[derive(Deserialize)]
 struct SetlistFMArtist {
     mbid: String,
-    tmid: String,
+    tmid: Option<String>,
     name: String,
+    sortName: String,
+    disambiguation: Option<String>,
+    url: String,
 }
-
+impl fmt::Display for SetlistFMArtist {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "name: {}, mbid: {} url: {}, sortName: {}",
+            self.name, self.mbid, self.url, self.sortName
+        )
+    }
+}
 enum SetlistFMEndpoint {
     ArtistSearch,
 }
@@ -27,36 +38,60 @@ struct Settings {
 }
 
 impl Settings {
-    pub fn new(version: &'static str, APIkey: String) -> Settings {
-        Settings { version, APIkey }
+    pub fn new(version: &'static str, api_key: String) -> Settings {
+        Settings {
+            version,
+            APIkey: api_key,
+        }
     }
 }
 
+#[derive(Deserialize)]
+struct ArtistSearchResult {
+    artist: Vec<SetlistFMArtist>,
+}
+
+fn mask_error(err: reqwest::Error) -> () {
+    println!("unwrap error masking, {:?}", err);
+}
+
 impl SetlistFMAPI {
-    pub fn new(APIkey: String) -> SetlistFMAPI {
+    pub fn new(api_key: String) -> SetlistFMAPI {
         const version: &'static str = "v1";
         let client: reqwest::Client = Client::new();
-        let settings: Settings = Settings::new(version, APIkey);
+        let settings: Settings = Settings::new(version, api_key);
         SetlistFMAPI { settings, client }
     }
 
-    pub async fn search_artists(self, artist: &str) -> Result<(), reqwest::Error> {
+    pub async fn search_artists(self, artist: &str) -> Result<Vec<Artist>, reqwest::Error> {
         let request_url = generate_request_url(SetlistFMEndpoint::ArtistSearch, artist);
         println!("TESTING LOG");
         println!("{}", request_url);
-        let res = Client::new()
+        let res: ArtistSearchResult = Client::new()
             .get(request_url.as_str())
             .header("x-api-key", self.settings.APIkey.as_str())
+            .header("Accept", "application/json")
             .send()
-            .await?;
+            .await
+            .unwrap()
+            .json::<ArtistSearchResult>()
+            .await
+            .unwrap();
 
-        println!("JSON: {}", res.text().await?);
+        let first_artist = &res.artist[0];
 
         // copy the response body directly to stdout
         // res.copy_to(&mut std::io::stdout())?;
 
+        let mut return_val = Vec::new();
+        return_val.push(Artist {
+            id: 1,
+            name: first_artist.name.to_owned(),
+            mbid: first_artist.mbid.to_owned(),
+            spotify_id: "".to_string(),
+        });
         println!("\n\nDone.");
-        Ok(())
+        Ok(return_val)
     }
 }
 

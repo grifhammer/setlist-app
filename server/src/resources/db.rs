@@ -1,5 +1,4 @@
+use diesel::r2d2::{self, ConnectionManager};
 use diesel::PgConnection;
-use rocket_contrib::database;
 
-#[database("postgres")]
-pub struct PostgresConn(PgConnection);
+pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;

@@ -1,2 +1,0 @@
-[global.databases]
-postgres = { url = "postgres://diesel:jFq[!wBd;uB;khYTc2@localhost/setlist" }
