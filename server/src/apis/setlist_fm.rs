@@ -6,13 +6,13 @@ use std::fmt;
 static SETLIST_FM_URL: &str = "https://api.setlist.fm/rest/1.0/";
 
 #[derive(Deserialize)]
-struct SetlistFMArtist {
-    mbid: String,
-    tmid: Option<String>,
-    name: String,
+pub struct SetlistFMArtist {
+    pub mbid: String,
+    pub tmid: Option<String>,
+    pub name: String,
     sortName: String,
     disambiguation: Option<String>,
-    url: String,
+    pub url: String,
 }
 impl fmt::Display for SetlistFMArtist {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -65,8 +65,6 @@ impl SetlistFMAPI {
 
     pub async fn search_artists(self, artist: &str) -> Result<Vec<Artist>, reqwest::Error> {
         let request_url = generate_request_url(SetlistFMEndpoint::ArtistSearch, artist);
-        println!("TESTING LOG");
-        println!("{}", request_url);
         let res: ArtistSearchResult = Client::new()
             .get(request_url.as_str())
             .header("x-api-key", self.settings.APIkey.as_str())
@@ -84,12 +82,11 @@ impl SetlistFMAPI {
         // res.copy_to(&mut std::io::stdout())?;
 
         let mut return_val = Vec::new();
-        return_val.push(Artist {
-            id: 1,
-            name: first_artist.name.to_owned(),
-            mbid: first_artist.mbid.to_owned(),
-            spotify_id: "".to_string(),
-        });
+        return_val.push(Artist::from(first_artist));
+        return_val.push(Artist::from(&res.artist[1]));
+        return_val.push(Artist::from(&res.artist[2]));
+        return_val.push(Artist::from(&res.artist[3]));
+        return_val.push(Artist::from(&res.artist[4]));
         println!("\n\nDone.");
         Ok(return_val)
     }

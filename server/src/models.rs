@@ -1,3 +1,4 @@
+use crate::apis::setlist_fm::SetlistFMArtist;
 use crate::errors::AppError;
 use crate::schema::{artists, setlists};
 use actix_web::{HttpRequest, HttpResponse, Responder};
@@ -31,8 +32,19 @@ impl Responder for Setlist {
 pub struct Artist {
     pub id: i32,
     pub name: String,
+    pub spotify_id: Option<String>,
     pub mbid: String,
-    pub spotify_id: String,
+}
+
+impl From<&SetlistFMArtist> for Artist {
+    fn from(setlist_artist: &SetlistFMArtist) -> Self {
+        Artist {
+            id: 1,
+            name: setlist_artist.name.clone(),
+            spotify_id: None,
+            mbid: setlist_artist.mbid.clone(),
+        }
+    }
 }
 
 impl Responder for Artist {

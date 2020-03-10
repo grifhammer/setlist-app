@@ -2,7 +2,7 @@ table! {
     artists (id) {
         id -> Int4,
         mbid -> Varchar,
-        spotify_id -> Varchar,
+        spotify_id -> Nullable<Varchar>,
         name -> Text,
     }
 }
