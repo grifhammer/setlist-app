@@ -1,7 +1,9 @@
 import * as React from "react";
 import "./App.css";
 
+import ArtistSelector from "./components/ArtistSelector";
 import logo from "./logo.svg";
+
 const setlistHeaders = new Headers({
   Accept: "applicaton/json",
   "x-api-key": "c1491761-accd-4eb2-9b6c-4908848241b6"
@@ -12,7 +14,7 @@ setlistHeaders.append("Accept", "applicaton/json");
 console.log(setlistHeaders);
 class App extends React.Component<
   {},
-  { apiMessage: string; artistName: string }
+  { apiMessage: string; artistName: string; artists: [] }
 > {
   constructor(props: object) {
     super(props);
@@ -20,7 +22,8 @@ class App extends React.Component<
     this.state = {
       apiMessage:
         "Loading... (If this takes too long, the database might be down.)",
-      artistName: ""
+      artistName: "",
+      artists: []
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -36,20 +39,20 @@ class App extends React.Component<
 
   public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const result = await fetch(
-      `https://api.setlist.fm/rest/1.0/search/artist?artistName=${this.state.artistName}`,
+      `http://localhost:8000/artist/${encodeURI(this.state.artistName)}`,
       {
         headers: {
-          Accept: "applicaton/json",
-          "x-api-key": "c1491761-accd-4eb2-9b6c-4908848241b6"
-        },
-        mode: "no-cors"
+          Accept: "applicaton/json"
+        }
       }
     );
-    const textResponse = await result.text();
+    const artists = await result.json();
+    // tslint:disable-next-line:no-console
+
     this.setState({
-      apiMessage: textResponse
+      apiMessage: "Done.",
+      artists
     });
   }
 
@@ -76,6 +79,7 @@ class App extends React.Component<
           <input type="submit" value="submit form" />
         </form>
         <p>{this.state.apiMessage}</p>
+        <ArtistSelector artists={this.state.artists} />
       </div>
     );
   }

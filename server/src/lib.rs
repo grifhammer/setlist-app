@@ -9,20 +9,15 @@ extern crate url;
 
 mod apis;
 mod errors;
-mod fns;
 mod models;
 mod resources;
 mod routes;
 mod schema;
 
+use actix_cors::Cors;
+use actix_web::{http, middleware, App, HttpServer};
 use diesel::r2d2::{self, ConnectionManager};
 use diesel::PgConnection;
-
-use actix_web::{middleware, App, HttpServer};
-
-struct AppState {
-    server_id: usize,
-}
 
 pub struct SetlistApp {
     port: u16,
@@ -45,11 +40,20 @@ impl SetlistApp {
         println!("Starting http server 127.0.0.1:{}.", self.port);
         HttpServer::new(move || {
             App::new()
+                .wrap(
+                    Cors::new()
+                        .allowed_methods(vec!["GET", "POST"])
+                        .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                        .allowed_header(http::header::CONTENT_TYPE)
+                        .max_age(3600)
+                        .finish(),
+                )
                 .data(pool.clone())
                 .data(setlist_fm_api_key.to_owned())
                 .wrap(middleware::Logger::default())
                 .service(routes::index::index)
                 .service(routes::artist::artist)
+                .service(routes::artist::setlists)
         })
         .bind(("127.0.0.1", self.port))?
         .run()

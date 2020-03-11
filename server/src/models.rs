@@ -1,4 +1,4 @@
-use crate::apis::setlist_fm::SetlistFMArtist;
+use crate::apis::setlist_fm::{SetlistFMArtist, SetlistFMSetlist};
 use crate::errors::AppError;
 use crate::schema::{artists, setlists};
 use actix_web::{HttpRequest, HttpResponse, Responder};
@@ -28,6 +28,16 @@ impl Responder for Setlist {
     }
 }
 
+impl From<SetlistFMSetlist> for Setlist {
+    fn from(setlist: SetlistFMSetlist) -> Self {
+        Setlist {
+            id: 1,
+            title: setlist.venue.name.clone(),
+            published: true,
+        }
+    }
+}
+
 #[derive(Queryable, Identifiable, Serialize, Debug, PartialEq)]
 pub struct Artist {
     pub id: i32,
@@ -36,8 +46,8 @@ pub struct Artist {
     pub mbid: String,
 }
 
-impl From<&SetlistFMArtist> for Artist {
-    fn from(setlist_artist: &SetlistFMArtist) -> Self {
+impl From<SetlistFMArtist> for Artist {
+    fn from(setlist_artist: SetlistFMArtist) -> Self {
         Artist {
             id: 1,
             name: setlist_artist.name.clone(),
@@ -96,7 +106,6 @@ pub fn find_artist<'a>(conn: &PgConnection, key: ArtistKey<'a>) -> Result<Artist
 }
 
 pub fn get_setlists(conn: &PgConnection) -> Vec<Setlist> {
-    use crate::schema::setlists::*;
     println!("Getting setlists");
     setlists::table
         .limit(5)
@@ -104,4 +113,4 @@ pub fn get_setlists(conn: &PgConnection) -> Vec<Setlist> {
         .expect("Error loading setlists")
 }
 
-pub fn create_setlist() {}
+// pub fn create_setlist() {}
