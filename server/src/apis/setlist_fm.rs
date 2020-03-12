@@ -1,62 +1,31 @@
+pub mod models;
+
 use crate::models::*;
+use models::{SetlistFMArtist, SetlistFMSet, SetlistFMSetlist, SetlistFMSong};
 use reqwest::Client;
 use serde::Deserialize;
-use std::fmt;
 
 static SETLIST_FM_URL: &str = "https://api.setlist.fm/rest/1.0/";
 
-#[derive(Deserialize, Clone)]
-pub struct SetlistFMSetlist {
-    pub artist: SetlistFMArtist,
-    pub venue: SetlistFMVenue,
-    pub sets: Option<SetlistFMSets>,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct SetlistFMSets {
-    pub set: Option<Vec<SetlistFMSet>>,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct SetlistFMSet {
-    pub name: Option<String>,
-    pub song: Vec<SetlistFMSong>,
-    pub encore: Option<i8>,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct SetlistFMSong {
-    pub name: String,
-    pub info: Option<String>,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct SetlistFMVenue {
-    pub name: String,
-}
-
-#[derive(Deserialize, Clone)]
-pub struct SetlistFMArtist {
-    pub mbid: String,
-    pub tmid: Option<String>,
-    pub name: String,
-    sortName: String,
-    disambiguation: Option<String>,
-    pub url: String,
-}
-
-impl fmt::Display for SetlistFMArtist {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "name: {}, mbid: {} url: {}, sortName: {}",
-            self.name, self.mbid, self.url, self.sortName
-        )
-    }
-}
 enum SetlistFMEndpoint {
     ArtistSearch,
     SetlistSearch,
+}
+
+#[derive(Deserialize)]
+struct ArtistSearchResult {
+    itemsPerPage: i32,
+    page: i32,
+    total: i32,
+    artist: Vec<SetlistFMArtist>,
+}
+
+#[derive(Deserialize)]
+struct SetlistSearchResult {
+    itemsPerPage: i32,
+    page: i32,
+    total: i32,
+    setlist: Vec<SetlistFMSetlist>,
 }
 
 pub struct SetlistFMAPI {
@@ -76,22 +45,6 @@ impl Settings {
             APIkey: api_key,
         }
     }
-}
-
-#[derive(Deserialize)]
-struct ArtistSearchResult {
-    itemsPerPage: i32,
-    page: i32,
-    total: i32,
-    artist: Vec<SetlistFMArtist>,
-}
-
-#[derive(Deserialize)]
-struct SetlistSearchResult {
-    itemsPerPage: i32,
-    page: i32,
-    total: i32,
-    setlist: Vec<SetlistFMSetlist>,
 }
 
 impl SetlistFMAPI {
@@ -119,7 +72,10 @@ impl SetlistFMAPI {
         Ok(result_to_vec::<SetlistFMArtist, Artist>(res.artist))
     }
 
-    pub async fn search_setlist(self, mbid: &str) -> Result<Vec<Setlist>, reqwest::Error> {
+    pub async fn search_setlist(
+        self,
+        mbid: &str,
+    ) -> Result<Vec<(Setlist, Vec<Song>)>, reqwest::Error> {
         let request_url = generate_request_url(SetlistFMEndpoint::SetlistSearch, mbid);
         let res = self
             .client
@@ -130,12 +86,26 @@ impl SetlistFMAPI {
             .await
             .unwrap();
 
-        if (res.status().is_success()) {
+        if res.status().is_success() {
             println!("Result Obtained for setlist search");
             let setlist_result = res.json::<SetlistSearchResult>().await.unwrap();
-            Ok(result_to_vec::<SetlistFMSetlist, Setlist>(
-                setlist_result.setlist,
-            ))
+            Ok(setlist_result
+                .setlist
+                .iter()
+                .map(|e: &SetlistFMSetlist| -> (Setlist, Vec<Song>) {
+                    let sets: Vec<SetlistFMSet> =
+                        e.sets.clone().unwrap_or_default().set.unwrap_or_default();
+                    let songs: Vec<SetlistFMSong> = sets.iter().fold(Vec::new(), |mut acc, x| {
+                        let mut to_append = x.song.clone();
+                        acc.append(&mut to_append);
+                        acc
+                    });
+                    (
+                        Setlist::from(e.clone()),
+                        result_to_vec::<SetlistFMSong, Song>(songs),
+                    )
+                })
+                .collect())
         } else {
             Ok(Vec::new())
         }

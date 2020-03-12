@@ -1,17 +1,29 @@
-use crate::apis::setlist_fm::{SetlistFMArtist, SetlistFMSetlist};
+use crate::apis::setlist_fm::models::{SetlistFMArtist, SetlistFMSetlist, SetlistFMSong};
 use crate::errors::AppError;
 use crate::schema::{artists, setlists, songs};
 use actix_web::{HttpRequest, HttpResponse, Responder};
+use diesel::associations;
 use diesel::prelude::*;
-use futures::future::{ready, Ready};
 use serde::Serialize;
 
 type Result<T> = std::result::Result<T, AppError>;
 
-#[derive(Identifiable, Serialize, Queryable, Debug)]
+#[derive(Associations, Identifiable, Serialize, Queryable, Debug)]
+#[belongs_to(Setlist, foreign_key = "setlist_id")]
 pub struct Song {
     pub id: i32,
     pub name: String,
+    pub setlist_id: i32,
+}
+
+impl From<SetlistFMSong> for Song {
+    fn from(song: SetlistFMSong) -> Self {
+        Song {
+            id: 1,
+            name: song.name,
+            setlist_id: 1,
+        }
+    }
 }
 
 #[derive(Queryable, Identifiable, Associations, Serialize, Debug, PartialEq)]
@@ -20,19 +32,6 @@ pub struct Setlist {
     pub title: String,
     pub published: bool,
     pub artist_mbid: String,
-}
-
-impl Responder for Setlist {
-    type Error = AppError;
-    type Future = Ready<Result<HttpResponse>>;
-
-    fn respond_to(self, _req: &HttpRequest) -> Self::Future {
-        let body = serde_json::to_string(&self).unwrap();
-
-        ready(Ok(HttpResponse::Ok()
-            .content_type("application/json")
-            .body(body)))
-    }
 }
 
 impl From<SetlistFMSetlist> for Setlist {
@@ -62,19 +61,6 @@ impl From<SetlistFMArtist> for Artist {
             spotify_id: None,
             mbid: setlist_artist.mbid.clone(),
         }
-    }
-}
-
-impl Responder for Artist {
-    type Error = AppError;
-    type Future = Ready<Result<HttpResponse>>;
-
-    fn respond_to(self, _req: &HttpRequest) -> Self::Future {
-        let body = serde_json::to_string(&self).unwrap();
-
-        ready(Ok(HttpResponse::Ok()
-            .content_type("application/json")
-            .body(body)))
     }
 }
 
