@@ -1,8 +1,8 @@
-interface IArtist {
+interface ISetlist {
   id: BigInteger;
   name: string;
   spotify_id?: string;
   mbid: string;
 }
 
-export default IArtist;
+export default ISetlist;

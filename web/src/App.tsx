@@ -3,6 +3,9 @@ import "./App.css";
 
 import ArtistSelector from "./components/ArtistSelector";
 import logo from "./logo.svg";
+import IArtist from "./models/Artist";
+
+const emptyList: IArtist[] = [];
 
 const setlistHeaders = new Headers({
   Accept: "applicaton/json",
@@ -14,7 +17,7 @@ setlistHeaders.append("Accept", "applicaton/json");
 console.log(setlistHeaders);
 class App extends React.Component<
   {},
-  { apiMessage: string; artistName: string; artists: [] }
+  { apiMessage: string; artistName: string; artists: IArtist[] }
 > {
   constructor(props: object) {
     super(props);
@@ -23,7 +26,7 @@ class App extends React.Component<
       apiMessage:
         "Loading... (If this takes too long, the database might be down.)",
       artistName: "",
-      artists: []
+      artists: emptyList
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -47,9 +50,10 @@ class App extends React.Component<
         }
       }
     );
-    const artists = await result.json();
-    // tslint:disable-next-line:no-console
-
+    let artists = emptyList;
+    if (result.ok) {
+      artists = await result.json();
+    }
     this.setState({
       apiMessage: "Done.",
       artists
