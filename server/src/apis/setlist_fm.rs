@@ -3,9 +3,15 @@ pub mod models;
 use crate::models::*;
 use models::{SetlistFMArtist, SetlistFMSet, SetlistFMSetlist, SetlistFMSong};
 use reqwest::Client;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 static SETLIST_FM_URL: &str = "https://api.setlist.fm/rest/1.0/";
+
+#[derive(Serialize)]
+pub struct SetlistSearchResponse {
+    details: Setlist,
+    songs: Vec<Song>,
+}
 
 enum SetlistFMEndpoint {
     ArtistSearch,
@@ -75,7 +81,7 @@ impl SetlistFMAPI {
     pub async fn search_setlist(
         self,
         mbid: &str,
-    ) -> Result<Vec<(Setlist, Vec<Song>)>, reqwest::Error> {
+    ) -> Result<Vec<SetlistSearchResponse>, reqwest::Error> {
         let request_url = generate_request_url(SetlistFMEndpoint::SetlistSearch, mbid);
         let res = self
             .client
@@ -92,7 +98,7 @@ impl SetlistFMAPI {
             Ok(setlist_result
                 .setlist
                 .iter()
-                .map(|e: &SetlistFMSetlist| -> (Setlist, Vec<Song>) {
+                .map(|e: &SetlistFMSetlist| -> SetlistSearchResponse {
                     let sets: Vec<SetlistFMSet> =
                         e.sets.clone().unwrap_or_default().set.unwrap_or_default();
                     let songs: Vec<SetlistFMSong> = sets.iter().fold(Vec::new(), |mut acc, x| {
@@ -100,10 +106,10 @@ impl SetlistFMAPI {
                         acc.append(&mut to_append);
                         acc
                     });
-                    (
-                        Setlist::from(e.clone()),
-                        result_to_vec::<SetlistFMSong, Song>(songs),
-                    )
+                    SetlistSearchResponse {
+                        details: Setlist::from(e.clone()),
+                        songs: result_to_vec::<SetlistFMSong, Song>(songs),
+                    }
                 })
                 .collect())
         } else {
