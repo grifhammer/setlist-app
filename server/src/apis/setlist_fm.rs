@@ -121,22 +121,24 @@ impl SetlistFMAPI {
 
     pub async fn search_setlist(self, mbid: &str) -> Result<Vec<Setlist>, reqwest::Error> {
         let request_url = generate_request_url(SetlistFMEndpoint::SetlistSearch, mbid);
-        let res: Result<SetlistSearchResult, reqwest::Error> = self
+        let res = self
             .client
             .get(request_url.as_str())
             .header("x-api-key", self.settings.APIkey.as_str())
             .header("Accept", "application/json")
             .send()
             .await
-            .unwrap()
-            .json::<SetlistSearchResult>()
-            .await;
+            .unwrap();
 
-        println!("Result Obtained for setlist search");
-        let setlist_result = res.expect("Expecting result from setlist search");
-        Ok(result_to_vec::<SetlistFMSetlist, Setlist>(
-            setlist_result.setlist,
-        ))
+        if (res.status().is_success()) {
+            println!("Result Obtained for setlist search");
+            let setlist_result = res.json::<SetlistSearchResult>().await.unwrap();
+            Ok(result_to_vec::<SetlistFMSetlist, Setlist>(
+                setlist_result.setlist,
+            ))
+        } else {
+            Ok(Vec::new())
+        }
     }
 }
 

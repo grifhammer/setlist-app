@@ -1,6 +1,6 @@
 use crate::apis::setlist_fm::{SetlistFMArtist, SetlistFMSetlist};
 use crate::errors::AppError;
-use crate::schema::{artists, setlists};
+use crate::schema::{artists, setlists, songs};
 use actix_web::{HttpRequest, HttpResponse, Responder};
 use diesel::prelude::*;
 use futures::future::{ready, Ready};
@@ -8,11 +8,18 @@ use serde::Serialize;
 
 type Result<T> = std::result::Result<T, AppError>;
 
-#[derive(Queryable, Identifiable, Serialize, Debug, PartialEq)]
+#[derive(Identifiable, Serialize, Queryable, Debug)]
+pub struct Song {
+    pub id: i32,
+    pub name: String,
+}
+
+#[derive(Queryable, Identifiable, Associations, Serialize, Debug, PartialEq)]
 pub struct Setlist {
     pub id: i32,
     pub title: String,
     pub published: bool,
+    pub artist_mbid: String,
 }
 
 impl Responder for Setlist {
@@ -34,6 +41,7 @@ impl From<SetlistFMSetlist> for Setlist {
             id: 1,
             title: setlist.venue.name.clone(),
             published: true,
+            artist_mbid: setlist.artist.mbid,
         }
     }
 }
