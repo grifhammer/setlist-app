@@ -1,17 +1,29 @@
 import * as React from "react";
 import IArtist from "src/models/Artist";
 import ISetlist from "src/models/Setlist";
+import ISong from "src/models/Song";
+import SetlistDisplay from "./SetlistDisplay";
 
 interface IArtistSelectorProps {
   artists: IArtist[];
 }
 
+interface ISetlistResult {
+  details: ISetlist;
+  songs: ISong[];
+}
+
 class ArtistSelector extends React.Component<
   IArtistSelectorProps,
-  { selectedArtist: string; setlists: ISetlist[] }
+  { selectedArtist: string | null; setlists: ISetlistResult[] }
 > {
   constructor(props: IArtistSelectorProps) {
     super(props);
+
+    this.state = {
+      selectedArtist: null,
+      setlists: []
+    };
   }
 
   public render() {
@@ -20,14 +32,25 @@ class ArtistSelector extends React.Component<
     }
     const artists = this.props.artists.map(artist => {
       return (
-        <p
+        <div
           onClick={this.searchSetlists.bind(this, artist.mbid)}
           key={artist.mbid}
         >
           {artist.name} {artist.mbid}
-        </p>
+          {this.state.selectedArtist &&
+            this.state.selectedArtist === artist.mbid &&
+            this.state.setlists.map(({ details, songs }) => {
+              return (
+                <SetlistDisplay
+                  key={details.name}
+                  details={details}
+                  songs={songs}
+                />
+              );
+            }, this)}
+        </div>
       );
-    });
+    }, this);
     return <form>{artists}</form>;
   }
 
@@ -40,7 +63,7 @@ class ArtistSelector extends React.Component<
         }
       }
     );
-    let setlists: ISetlist[] = [];
+    let setlists: ISetlistResult[] = [];
     if (result.ok) {
       setlists = await result.json();
     }
