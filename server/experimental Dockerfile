@@ -1,0 +1,26 @@
+FROM rustlang:rust:nightly
+
+WORKDIR ./
+RUN USER=root cargo new --bin builder
+WORKDIR /app/builder
+COPY ./Cargo.lock .
+COPY ./Cargo.toml .
+
+# cache dependencies
+RUN cargo build --release
+
+# load real sources
+RUN rm src/*.rs
+COPY ./src ./src
+
+RUN cargo build --release
+
+# Final image
+FROM debian:buster-slim
+# copy the binary into the final image
+COPY --from=builder /app/builder/target/release/alexandrie .
+COPY ./alexandrie.toml .
+
+EXPOSE 3000
+# set the binary as entrypoint
+ENTRYPOINT ["/alexandrie"]

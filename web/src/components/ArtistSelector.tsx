@@ -1,23 +1,16 @@
 import * as React from "react";
-import IArtist from "src/models/Artist";
-import ISetlist from "src/models/Setlist";
-import ISong from "src/models/Song";
+import Artist from "src/store/artist/types";
 import SetlistDisplay from "./SetlistDisplay";
 
-interface IArtistSelectorProps {
-  artists: IArtist[];
-}
-
-interface ISetlistResult {
-  details: ISetlist;
-  songs: ISong[];
+interface ArtistSelectorProps {
+  artists: Artist[];
 }
 
 class ArtistSelector extends React.Component<
-  IArtistSelectorProps,
-  { selectedArtist: string | null; setlists: ISetlistResult[] }
+  ArtistSelectorProps,
+  { selectedArtist: string | null; setlists: any[] }
 > {
-  constructor(props: IArtistSelectorProps) {
+  constructor(props: ArtistSelectorProps) {
     super(props);
 
     this.state = {
@@ -63,7 +56,7 @@ class ArtistSelector extends React.Component<
         }
       }
     );
-    let setlists: ISetlistResult[] = [];
+    let setlists: any[] = [];
     if (result.ok) {
       setlists = await result.json();
     }
