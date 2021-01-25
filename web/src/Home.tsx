@@ -3,6 +3,7 @@ import "./Home.css";
 
 import ArtistSelector from "./components/ArtistSelector";
 import Artist from "./store/artist/types";
+import { baseUrl } from "./settings";
 
 const emptyList: Artist[] = [];
 
@@ -32,7 +33,7 @@ class Home extends React.Component<
   public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const result = await fetch(
-      `http://localhost:8000/artist/${encodeURI(this.state.artistName)}`,
+      `${baseUrl}/artistSearch/${encodeURI(this.state.artistName)}`,
       {
         headers: {
           Accept: "applicaton/json",
