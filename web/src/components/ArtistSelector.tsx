@@ -2,6 +2,8 @@ import * as React from "react";
 import Artist from "src/store/artist/types";
 import SetlistDisplay from "./SetlistDisplay";
 
+import "./ArtistSelector.css";
+
 interface ArtistSelectorProps {
   artists: Artist[];
 }
@@ -26,6 +28,7 @@ class ArtistSelector extends React.Component<
     const artists = this.props.artists.map(artist => {
       return (
         <div
+          className="artist-selector"
           onClick={this.searchSetlists.bind(this, artist.mbid)}
           key={artist.mbid}
         >

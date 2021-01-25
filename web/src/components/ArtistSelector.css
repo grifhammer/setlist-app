@@ -1,0 +1,16 @@
+.artist-selector {
+  padding: 8px 12px 8px 8px;
+  border-radius: 40px;
+  display: inline-flex;
+  margin: 3px;
+  cursor: pointer;
+  background: #f4a261;
+  overflow: hidden;
+  transition: width 2s, height 1s;
+}
+.artist-selector:nth-child(3n + 1) {
+  background: #e9c46a;
+}
+.artist-selector:nth-child(3n + 2) {
+  background: #e76f51;
+}
