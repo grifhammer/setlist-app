@@ -12,7 +12,7 @@ class SetlistDisplay extends React.Component<ISetlistDisplayProps> {
   }
 
   public render() {
-    const songs = this.props.songs.map(song => {
+    const songs = this.props.songs.map((song) => {
       return <p key={song.name}>{song.name}</p>;
     });
     return songs;

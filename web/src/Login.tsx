@@ -16,7 +16,7 @@ class Login extends React.Component<
 
     this.state = {
       password: "",
-      userName: ""
+      userName: "",
     };
   }
 
@@ -36,7 +36,7 @@ class Login extends React.Component<
 
   private onSuccess({
     access_token: accessToken,
-    expires_in: expiresIn
+    expires_in: expiresIn,
   }: {
     access_token: string;
     expires_in: number;
@@ -45,7 +45,7 @@ class Login extends React.Component<
     const now = new Date();
     now.setSeconds(now.getSeconds() + expiresIn);
     cookies.set("spotifyToken", accessToken, {
-      expires: now
+      expires: now,
     });
   }
   private onFailure(): void {

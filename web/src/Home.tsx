@@ -15,7 +15,7 @@ class Home extends React.Component<
 
     this.state = {
       artistName: "",
-      artists: emptyList
+      artists: emptyList,
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -35,8 +35,8 @@ class Home extends React.Component<
       `http://localhost:8000/artist/${encodeURI(this.state.artistName)}`,
       {
         headers: {
-          Accept: "applicaton/json"
-        }
+          Accept: "applicaton/json",
+        },
       }
     );
     let artists = emptyList;
@@ -44,7 +44,7 @@ class Home extends React.Component<
       artists = await result.json();
     }
     this.setState({
-      artists
+      artists,
     });
   }
 
