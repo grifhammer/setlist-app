@@ -17,7 +17,7 @@ class ArtistSelector extends React.Component<
 
     this.state = {
       selectedArtist: null,
-      setlists: []
+      setlists: [],
     };
   }
 
@@ -25,14 +25,14 @@ class ArtistSelector extends React.Component<
     if (this.props.artists.length <= 0) {
       return null;
     }
-    const artists = this.props.artists.map(artist => {
+    const artists = this.props.artists.map((artist) => {
       return (
         <div
           className="artist-selector"
           onClick={this.searchSetlists.bind(this, artist.mbid)}
           key={artist.mbid}
         >
-          {artist.name} {artist.mbid}
+          {artist.name} test {artist.mbid}
           {this.state.selectedArtist &&
             this.state.selectedArtist === artist.mbid &&
             this.state.setlists.map(({ details, songs }) => {
@@ -55,8 +55,8 @@ class ArtistSelector extends React.Component<
       `http://localhost:8000/artist/${mbid}/setlists`,
       {
         headers: {
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+        },
       }
     );
     let setlists: any[] = [];
@@ -65,7 +65,7 @@ class ArtistSelector extends React.Component<
     }
     this.setState({
       selectedArtist: mbid,
-      setlists
+      setlists,
     });
     return;
   }
