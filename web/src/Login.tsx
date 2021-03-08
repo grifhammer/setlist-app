@@ -23,7 +23,6 @@ class Login extends React.Component<
   public render() {
     return (
       <div>
-        TESTING
         <SpotifyLogin
           clientId={clientId}
           redirectUri={redirectUri}
