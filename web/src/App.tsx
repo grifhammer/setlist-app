@@ -12,7 +12,7 @@ class App extends React.Component<{}, {}> {
   public render() {
     return (
       <React.Fragment>
-        Fuck
+        Fu settings
         <Login />
         <Home />
       </React.Fragment>

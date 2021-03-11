@@ -9,13 +9,14 @@
 #     headers:
 #     - key: 'custom-header-name-1'
 #       value: 'custom-header-value-2'
-
-customHeaders:
-  - pattern: "**/manifest.json"
-    headers:
-      - key: "Access-Control-Allow-Origin"
-        value: "*"
-      - key: "Access-Control-Allow-Headers"
-        value: "*"
-      - key: "Access-Control-Allow-Methods"
-        value: "GET"
+applications:
+  - appRoot: web
+    customHeaders:
+      - pattern: "**/manifest.json"
+        headers:
+          - key: "Access-Control-Allow-Origin"
+            value: "*"
+          - key: "Access-Control-Allow-Headers"
+            value: "*"
+          - key: "Access-Control-Allow-Methods"
+            value: "GET"
