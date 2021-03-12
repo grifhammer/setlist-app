@@ -2,3 +2,4 @@
 /server/.env
 /server/Rocket.toml
 web/.eslintcache
+serverless-backend/bin

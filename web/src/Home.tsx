@@ -33,8 +33,9 @@ class Home extends React.Component<
   public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const result = await fetch(
-      `${baseUrl}/artistSearch/${encodeURI(this.state.artistName)}`,
+      `${baseUrl}/artistSearch?artist=${encodeURI(this.state.artistName)}`,
       {
+        mode: "cors",
         headers: {
           Accept: "applicaton/json",
         },
