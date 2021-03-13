@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Cookies } from "react-cookie";
 import SpotifyLogin from "react-spotify-login";
-
+import moment from "moment";
 import { clientId, redirectUri } from "./settings";
 
 class Login extends React.Component<
@@ -42,9 +42,10 @@ class Login extends React.Component<
   }): void {
     const cookies = new Cookies();
     const now = new Date();
+    const expiration = moment().add(expiresIn, "seconds");
     now.setSeconds(now.getSeconds() + expiresIn);
     cookies.set("spotifyToken", accessToken, {
-      expires: now,
+      expires: expiration.toDate(),
     });
   }
   private onFailure(): void {
