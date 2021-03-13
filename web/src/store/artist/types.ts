@@ -1,6 +1,7 @@
 export default interface Artist {
   id: BigInteger;
   name: string;
+  disambiguation?: string;
   spotify_id?: string;
   mbid: string;
 }
@@ -8,7 +9,7 @@ export default interface Artist {
 export enum ArtistActionTypes {
   FETCH_REQUEST = "@@artist/FETCH_REQUEST",
   FETCH_SUCCESS = "@@artist/FETCH_SUCCESS",
-  FETCH_ERROR = "@@artist/FETCH_ERROR"
+  FETCH_ERROR = "@@artist/FETCH_ERROR",
 }
 
 export interface ArtistState {

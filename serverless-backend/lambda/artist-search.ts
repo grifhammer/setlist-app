@@ -45,6 +45,9 @@ export const searchArtistHandler: APIGatewayProxyHandlerV2<[Artist]> = async (
   const response: APIGatewayProxyResultV2 = {
     statusCode: 200,
     body: JSON.stringify(artists.artist),
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
   };
   return response;
 };

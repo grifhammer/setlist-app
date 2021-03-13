@@ -32,7 +32,7 @@ class ArtistSelector extends React.Component<
           onClick={this.searchSetlists.bind(this, artist.mbid)}
           key={artist.mbid}
         >
-          {artist.name} test {artist.mbid}
+          {artist.name} {artist.disambiguation}
           {this.state.selectedArtist &&
             this.state.selectedArtist === artist.mbid &&
             this.state.setlists.map(({ details, songs }) => {
