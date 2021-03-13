@@ -3,6 +3,7 @@ import Artist from "src/store/artist/types";
 import SetlistDisplay from "./SetlistDisplay";
 
 import "./ArtistSelector.css";
+import { baseUrl } from "src/settings";
 
 interface ArtistSelectorProps {
   artists: Artist[];
@@ -51,14 +52,12 @@ class ArtistSelector extends React.Component<
   }
 
   private async searchSetlists(mbid: string) {
-    const result = await fetch(
-      `http://localhost:8000/artist/${mbid}/setlists`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    const result = await fetch(`${baseUrl}/setlists?mbid=${mbid}`, {
+      mode: "cors",
+      headers: {
+        Accept: "application/json",
+      },
+    });
     let setlists: any[] = [];
     if (result.ok) {
       setlists = await result.json();
