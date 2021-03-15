@@ -4,6 +4,7 @@ import SetlistDisplay from "./SetlistDisplay";
 
 import "./ArtistSelector.css";
 import { baseUrl } from "src/settings";
+import ISetlist from "src/models/Setlist";
 
 interface ArtistSelectorProps {
   artists: Artist[];
@@ -36,10 +37,10 @@ class ArtistSelector extends React.Component<
           {artist.name} {artist.disambiguation}
           {this.state.selectedArtist &&
             this.state.selectedArtist === artist.mbid &&
-            this.state.setlists.map(({ details, songs }) => {
+            this.state.setlists.map((result: ISetlist) => {
               return (
                 <SetlistDisplay
-                  key={details.name}
+                  key={result.id}
                   details={details}
                   songs={songs}
                 />
