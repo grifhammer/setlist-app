@@ -52,7 +52,7 @@ class ArtistSelector extends React.Component<
   }
 
   private async searchSetlists(mbid: string) {
-    const result = await fetch(`${baseUrl}/setlists?mbid=${mbid}`, {
+    const result = await fetch(`${baseUrl}/setlists?artistMbid=${mbid}`, {
       mode: "cors",
       headers: {
         Accept: "application/json",
