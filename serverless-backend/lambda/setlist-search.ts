@@ -32,10 +32,13 @@ export const searchSetlistHandler: APIGatewayProxyHandlerV2<[Setlist]> = async (
     Accept: "application/json",
   });
 
-  const searchResult = await fetch("https://api.setlist.fm/rest/1.0/search/", {
-    method: "GET",
-    headers,
-  });
+  const searchResult = await fetch(
+    `https://api.setlist.fm/rest/1.0/artist/${artistMbid}/setlists`,
+    {
+      method: "GET",
+      headers,
+    }
+  );
   let thing: SetlistSearch = await searchResult.json();
 
   console.info(thing);
