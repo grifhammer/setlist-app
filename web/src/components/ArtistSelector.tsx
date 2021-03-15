@@ -38,13 +38,7 @@ class ArtistSelector extends React.Component<
           {this.state.selectedArtist &&
             this.state.selectedArtist === artist.mbid &&
             this.state.setlists.map((result: ISetlist) => {
-              return (
-                <SetlistDisplay
-                  key={result.id}
-                  details={details}
-                  songs={songs}
-                />
-              );
+              return <SetlistDisplay key={result.id} setlist={result} />;
             }, this)}
         </div>
       );
