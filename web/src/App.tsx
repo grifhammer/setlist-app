@@ -2,6 +2,7 @@ import * as React from "react";
 import Home from "./Home";
 import Login from "./Login";
 
+import "./App.css";
 class App extends React.Component<{}, {}> {
   constructor(props: object) {
     super(props);
