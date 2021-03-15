@@ -11,18 +11,31 @@ export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const setlistFMKey = SecretValue.secretsManager("API_KEYS", {
+      jsonField: "SETLIST_FM",
+    }).toString();
     const searchArtistLambda = new NodejsFunction(this, "searchArtists", {
       entry: "./lambda/artist-search.ts",
       handler: "searchArtistHandler",
       environment: {
-        SETLIST_FM_KEY: SecretValue.secretsManager("API_KEYS", {
-          jsonField: "SETLIST_FM",
-        }).toString(),
+        SETLIST_FM_KEY: setlistFMKey,
+      },
+    });
+
+    const searchSetlistLambda = new NodejsFunction(this, "searchSetlists", {
+      entry: "./lambda/setlist-search.ts",
+      handler: "searchSetlistHandler",
+      environment: {
+        SETLIST_FM_KEY: setlistFMKey,
       },
     });
 
     const searchArtistIntegration = new LambdaProxyIntegration({
       handler: searchArtistLambda,
+    });
+
+    const searchSetlistIntegration = new LambdaProxyIntegration({
+      handler: searchSetlistLambda,
     });
     // const apiCert = Certificate.fromCertificateArn(
     //   this,
@@ -45,6 +58,11 @@ export class ServerlessBackendStack extends cdk.Stack {
       path: "/searchArtist",
       methods: [HttpMethod.GET],
       integration: searchArtistIntegration,
+    });
+    api.addRoutes({
+      path: "/setlists",
+      methods: [HttpMethod.GET],
+      integration: searchSetlistIntegration,
     });
   }
 }

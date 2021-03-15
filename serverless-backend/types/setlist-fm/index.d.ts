@@ -5,6 +5,7 @@ export * from "./Coords";
 export * from "./Country";
 export * from "./Set";
 export * from "./Setlist";
+export * from "./SetlistSearch";
 export * from "./Song";
 export * from "./Tour";
 export * from "./Venue";
