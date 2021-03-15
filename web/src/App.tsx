@@ -12,6 +12,7 @@ class App extends React.Component<{}, {}> {
   public render() {
     return (
       <React.Fragment>
+        <span className="App-header">Setlist Saver</span>
         <Login />
         <Home />
       </React.Fragment>
