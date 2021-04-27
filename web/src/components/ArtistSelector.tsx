@@ -3,8 +3,11 @@ import Artist from "src/store/artist/types";
 import SetlistDisplay from "./SetlistDisplay";
 
 import "./ArtistSelector.css";
-import { baseUrl } from "src/settings";
 import ISetlist from "src/models/Setlist";
+
+import { baseUrl } from "../settings";
+
+const emptyList: Artist[] = [];
 
 interface ArtistSelectorProps {
   artists: Artist[];
@@ -12,15 +15,36 @@ interface ArtistSelectorProps {
 
 class ArtistSelector extends React.Component<
   ArtistSelectorProps,
-  { selectedArtist: string | null; setlists: any[] }
+  { artistName: string; artists: Artist[] }
 > {
   constructor(props: ArtistSelectorProps) {
     super(props);
 
     this.state = {
-      selectedArtist: null,
-      setlists: [],
+      artistName: "",
+      artists: emptyList,
     };
+    this.searchArtist = this.searchArtist.bind(this);
+  }
+
+  public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const result = await fetch(
+      `${baseUrl}/searchArtist?artist=${encodeURI(this.state.artistName)}`,
+      {
+        mode: "cors",
+        headers: {
+          Accept: "applicaton/json",
+        },
+      }
+    );
+    let artists = emptyList;
+    if (result.ok) {
+      artists = await result.json();
+    }
+    this.setState({
+      artists,
+    });
   }
 
   public render() {

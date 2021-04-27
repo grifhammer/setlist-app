@@ -1,73 +1,34 @@
-import * as React from "react";
+import React, { FunctionComponent, useState, useEffect } from "react";
 import "./Home.css";
+import { useDispatch } from "react-redux";
+import GetPopularArtists from "./actions/GetPopularArtists";
 
-import ArtistSelector from "./components/ArtistSelector";
-import Artist from "./store/artist/types";
-import { baseUrl } from "./settings";
+const Home: FunctionComponent<{ history: any }> = ({ history }) => {
+  const [searchString, setSearch] = useState("");
+  const dispatch = useDispatch();
+  const FetchData = (page: number) => {
+    dispatch(GetPopularArtists(page));
+  };
 
-const emptyList: Artist[] = [];
+  useEffect(() => {
+    FetchData(1);
+  }, []);
 
-class Home extends React.Component<
-  {},
-  { artistName: string; artists: Artist[] }
-> {
-  constructor(props: object) {
-    super(props);
-
-    this.state = {
-      artistName: "",
-      artists: emptyList,
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.searchArtist = this.searchArtist.bind(this);
-  }
-
-  public handleChange(event: React.FormEvent) {
-    const target = event.target as HTMLInputElement;
-
-    this.setState({ artistName: target.value });
-    event.preventDefault();
-  }
-
-  public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const result = await fetch(
-      `${baseUrl}/searchArtist?artist=${encodeURI(this.state.artistName)}`,
-      {
-        mode: "cors",
-        headers: {
-          Accept: "applicaton/json",
-        },
-      }
-    );
-    let artists = emptyList;
-    if (result.ok) {
-      artists = await result.json();
-    }
-    this.setState({
-      artists,
-    });
-  }
-
-  public render() {
-    return (
-      <div>
-        <form onSubmit={this.searchArtist}>
-          <label>
-            Artist:
-            <input
-              type="text"
-              value={this.state.artistName}
-              onChange={this.handleChange}
-            />
-          </label>
-          <input type="submit" value="submit form" />
-        </form>
-        <ArtistSelector artists={this.state.artists} />
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <form
+        onSubmit={() => {
+          history.push(`/search/${searchString}`);
+        }}
+      >
+        <label>
+          Artist:
+          <input type="text" onChange={(e) => setSearch(e.target.value)} />
+        </label>
+        <input type="submit" value="submit form" />
+      </form>
+    </div>
+  );
+};
 
 export default Home;
