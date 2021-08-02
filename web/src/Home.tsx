@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useState, useEffect } from "react";
+import React, {
+  FunctionComponent,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import "./Home.css";
 import { useDispatch } from "react-redux";
 import GetPopularArtists from "./actions/GetPopularArtists";
@@ -6,13 +11,16 @@ import GetPopularArtists from "./actions/GetPopularArtists";
 const Home: FunctionComponent<{ history: any }> = ({ history }) => {
   const [searchString, setSearch] = useState("");
   const dispatch = useDispatch();
-  const FetchData = (page: number) => {
-    dispatch(GetPopularArtists(page));
-  };
+  const FetchData = useCallback(
+    (page: number) => {
+      dispatch(GetPopularArtists(page));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     FetchData(1);
-  }, []);
+  }, [FetchData]);
 
   return (
     <div>
