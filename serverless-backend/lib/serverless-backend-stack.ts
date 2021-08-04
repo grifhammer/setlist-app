@@ -1,11 +1,8 @@
 import * as cdk from "@aws-cdk/core";
 import { HttpApi, HttpMethod, DomainName } from "@aws-cdk/aws-apigatewayv2";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
-import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
-import { HostedZone, ARecord, RecordTarget } from "@aws-cdk/aws-route53";
-import { Certificate } from "@aws-cdk/aws-certificatemanager";
-import { ApiGatewayv2Domain } from "@aws-cdk/aws-route53-targets";
 import { SecretValue } from "@aws-cdk/core";
+import { Function, Runtime, Code } from "@aws-cdk/aws-lambda";
 
 export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -14,20 +11,23 @@ export class ServerlessBackendStack extends cdk.Stack {
     const setlistFMKey = SecretValue.secretsManager("API_KEYS", {
       jsonField: "SETLIST_FM",
     }).toString();
-    const searchArtistLambda = new NodejsFunction(this, "searchArtists", {
-      entry: "./lambda/artist-search.ts",
-      handler: "searchArtistHandler",
+    const searchArtistLambda = new Function(this, "searchArtists", {
+      runtime: Runtime.NODEJS_14_X,
+      code: Code.fromAsset("./lambda/ArtistSearch", {}),
+      // entry: "./lambda/artist-search.ts",
+      handler: "artist-search.searchArtistHandler",
       environment: {
         SETLIST_FM_KEY: setlistFMKey,
       },
     });
 
-    const searchSetlistLambda = new NodejsFunction(this, "searchSetlists", {
-      entry: "./lambda/setlist-search.ts",
-      handler: "searchSetlistHandler",
+    const searchSetlistLambda = new Function(this, "searchSetlists", {
+      code: Code.fromAsset("./lambda/SetlistSearch"),
+      handler: "setlist-search.searchSetlistHandler",
       environment: {
         SETLIST_FM_KEY: setlistFMKey,
       },
+      runtime: Runtime.NODEJS_14_X,
     });
 
     const searchArtistIntegration = new LambdaProxyIntegration({

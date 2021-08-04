@@ -1,0 +1,8 @@
+{
+  "ServerlessBackendStack/searchArtists": {
+    "SETLIST_FM_KEY": "c1491761-accd-4eb2-9b6c-4908848241b6"
+  },
+  "ServerlessBackendStack/searchSetlists": {
+    "SETLIST_FM_KEY": "c1491761-accd-4eb2-9b6c-4908848241b6"
+  }
+}

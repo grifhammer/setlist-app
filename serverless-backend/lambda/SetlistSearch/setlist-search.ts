@@ -3,48 +3,48 @@ import {
   APIGatewayProxyResultV2,
   APIGatewayProxyEventQueryStringParameters,
 } from "aws-lambda";
-import { Artist } from "../types/setlist-fm/Artist";
+import { SetlistSearch } from "../../types/setlist-fm";
+import { Setlist } from "../../types/setlist-fm";
 import fetch, { Headers } from "node-fetch";
-import { ArtistSearch } from "../types/setlist-fm";
-interface SearchArtistEnv extends NodeJS.ProcessEnv {
+interface SearchSetlistEnv extends NodeJS.ProcessEnv {
   SETLIST_FM_KEY?: string;
 }
-process.env;
-
-interface SearchArtistRequestBody
+interface SearchSetlistRequestBody
   extends APIGatewayProxyEventQueryStringParameters {
-  body?: string;
-  artist?: string;
+  artistMbid?: string;
 }
+const { SETLIST_FM_KEY } = process.env as SearchSetlistEnv;
 
-const { SETLIST_FM_KEY } = process.env as SearchArtistEnv;
-export const searchArtistHandler: APIGatewayProxyHandlerV2<[Artist]> = async (
+export const searchSetlistHandler: APIGatewayProxyHandlerV2<[Setlist]> = async (
   event,
   context
 ) => {
   console.info(event);
   const { queryStringParameters } = event;
-  const { artist }: SearchArtistRequestBody = queryStringParameters!;
-  // make proxy request
+  const { artistMbid }: SearchSetlistRequestBody = queryStringParameters!;
+  let setlists: Setlist[] = [];
   if (!SETLIST_FM_KEY) {
     throw new Error("Missing Setlist FM API Key");
   }
+
   const headers = new Headers({
     "x-api-key": SETLIST_FM_KEY,
     Accept: "application/json",
   });
+
   const searchResult = await fetch(
-    `https://api.setlist.fm/rest/1.0/search/artists?artistName=${artist!}`,
+    `https://api.setlist.fm/rest/1.0/artist/${artistMbid}/setlists`,
     {
       method: "GET",
       headers,
     }
   );
-  const artists: ArtistSearch = await searchResult.json();
-  console.log(artists);
+  let thing: SetlistSearch = await searchResult.json();
+
+  console.info(thing);
   const response: APIGatewayProxyResultV2 = {
     statusCode: 200,
-    body: JSON.stringify(artists.artist),
+    body: JSON.stringify(thing.setlist),
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
