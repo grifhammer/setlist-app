@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import "./Home.css";
 import { useDispatch } from "react-redux";
-import GetPopularArtists from "./actions/GetPopularArtists";
+import { GetPopularArtists } from "./actions/GetPopularArtists";
 
 const Home: FunctionComponent<{ history: any }> = ({ history }) => {
   const [searchString, setSearch] = useState("");
