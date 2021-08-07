@@ -15,12 +15,18 @@ interface ArtistSelectorProps {
 
 class ArtistSelector extends React.Component<
   ArtistSelectorProps,
-  { artistName: string; artists: Artist[] }
+  {
+    artistName: string;
+    artists: Artist[];
+    selectedArtist?: string;
+    setlists: ISetlist[];
+  }
 > {
   constructor(props: ArtistSelectorProps) {
     super(props);
 
     this.state = {
+      setlists: [],
       artistName: "",
       artists: emptyList,
     };

@@ -5,7 +5,9 @@ export const GetPopularArtists = (page: number) => {
         type: "POPULAR_ARTISTS_LOADING",
       });
 
-      const res = await fetch("");
+      const res = await fetch(
+        `https://api.griffinhammer.com/searchArtist?artist=${elohim}`
+      );
       const data = res.json();
       dispatch({
         type: "POPULAR_ARTISTS_SUCCESS",
