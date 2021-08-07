@@ -6,7 +6,6 @@ import "./ArtistSelector.css";
 import ISetlist from "src/models/Setlist";
 
 import { baseUrl } from "../settings";
-
 const emptyList: Artist[] = [];
 
 interface ArtistSelectorProps {
@@ -36,7 +35,9 @@ class ArtistSelector extends React.Component<
   public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const result = await fetch(
-      `${baseUrl}/searchArtist?artist=${encodeURI(this.state.artistName)}`,
+      `${process.env.API_URL}/searchArtist?artist=${encodeURI(
+        this.state.artistName
+      )}`,
       {
         mode: "cors",
         headers: {
