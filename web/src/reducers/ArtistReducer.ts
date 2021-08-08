@@ -27,10 +27,28 @@ export async function searchArtist(artistName: string) {
   return artists;
 }
 
-export const ArtistReducer: Reducer = async (state = DefaultState, action) => {
+async function searchSetlists(mbid: string) {
+  const result = await fetch(`${baseUrl}/setlists?artistMbid=${mbid}`, {
+    mode: "cors",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+  let setlists: any[] = [];
+  if (result.ok) {
+    setlists = await result.json();
+  }
+  return setlists;
+}
+
+export const ArtistReducer: Reducer = async (
+  { artistName, ...rest } = DefaultState,
+  action
+) => {
   switch (action.type) {
     default:
+      const artists = await searchArtist(artistName);
       console.log(action.type);
-      return { ...state };
+      return { ...rest, artists };
   }
 };

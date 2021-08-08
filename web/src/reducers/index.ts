@@ -1,10 +1,15 @@
 import { combineReducers } from "redux";
+import { connectRouter } from "connected-react-router";
+
 import { HomeReducer } from "../Home/HomeReducer";
 import { ArtistReducer } from "./ArtistReducer";
-const RootReducer = combineReducers({
-  Home: HomeReducer,
-  Login: HomeReducer,
-  Artist: ArtistReducer,
-});
+import { History } from "history";
 
-export default RootReducer;
+const createRootReducer = (history: History) =>
+  combineReducers({
+    router: connectRouter(history),
+    Home: HomeReducer,
+    Login: HomeReducer,
+    Artist: ArtistReducer,
+  });
+export default createRootReducer;

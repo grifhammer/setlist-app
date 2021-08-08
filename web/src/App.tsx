@@ -1,5 +1,5 @@
 import * as React from "react";
-import Home from "./Home/index.tsx";
+import Home from "./Home/index";
 import Login from "./Login";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
 
@@ -23,7 +23,11 @@ class App extends React.Component<{}, {}> {
         <Switch>
           <Route exact path={"/"} component={Home} />
           <Route exact path={"/login"} component={Login} />
-          <Route exact path="/search/:artist" component={ArtistSelector} />
+          <Route
+            exact
+            path="/search/artist/:artist"
+            component={ArtistSelector}
+          />
           <Route exact path="/artist/:mbid" component={SetlistDisplay} />
           <Redirect to={"/"} />
         </Switch>

@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useState, useReducer } from "react";
 import "./Home.css";
-import { HomeActions } from "./HomeActions";
 import { HomeReducer } from "./HomeReducer";
 const Home: FunctionComponent<{ history: any }> = ({ history }) => {
   const [searchString, setSearch] = useState("");
@@ -11,9 +10,7 @@ const Home: FunctionComponent<{ history: any }> = ({ history }) => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (searchString) {
-            dispatch({ type: HomeActions.SEARCH, data: searchString });
-          }
+          history.push(`/search/artist/${searchString}`, state);
         }}
       >
         <label>
