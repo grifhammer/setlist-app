@@ -1,11 +1,14 @@
 import * as React from "react";
+import { withRouter } from "react-router-dom";
+
 import Artist from "src/store/artist/types";
+import ISetlist from "src/models/Setlist";
+
 import SetlistDisplay from "./SetlistDisplay";
 
 import "./ArtistSelector.css";
-import ISetlist from "src/models/Setlist";
-
 import { baseUrl } from "../settings";
+
 const emptyList: Artist[] = [];
 
 interface ArtistSelectorProps {
@@ -29,29 +32,6 @@ class ArtistSelector extends React.Component<
       artistName: "",
       artists: emptyList,
     };
-    this.searchArtist = this.searchArtist.bind(this);
-  }
-
-  public async searchArtist(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const result = await fetch(
-      `${process.env.API_URL}/searchArtist?artist=${encodeURI(
-        this.state.artistName
-      )}`,
-      {
-        mode: "cors",
-        headers: {
-          Accept: "applicaton/json",
-        },
-      }
-    );
-    let artists = emptyList;
-    if (result.ok) {
-      artists = await result.json();
-    }
-    this.setState({
-      artists,
-    });
   }
 
   public render() {
@@ -69,7 +49,10 @@ class ArtistSelector extends React.Component<
           {this.state.selectedArtist &&
             this.state.selectedArtist === artist.mbid &&
             this.state.setlists.map((result: ISetlist) => {
-              return <SetlistDisplay key={result.id} setlist={result} />;
+              return "fart";
+              // return withRouter(
+              //   <SetlistDisplay key={result.id} setlist={result} />
+              // );
             }, this)}
         </div>
       );

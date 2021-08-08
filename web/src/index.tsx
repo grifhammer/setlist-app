@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import Store from "./store";
-
+console.log(process.env);
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>

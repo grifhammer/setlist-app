@@ -21,18 +21,10 @@ class App extends React.Component<{}, {}> {
           Setlist Saver
         </NavLink>
         <Switch>
-          <Route exact path={"/"}>
-            <Home />
-          </Route>
-          <Route exact path={"/login"}>
-            <Login />
-          </Route>
-          <Route exact path="/search/:searchTerm">
-            <ArtistSelector />
-          </Route>
-          <Route exact path="/artist/:mbid">
-            <SetlistDisplay />
-          </Route>
+          <Route exact path={"/"} component={Home} />
+          <Route exact path={"/login"} component={Login} />
+          <Route exact path="/search/:artist" component={ArtistSelector} />
+          <Route exact path="/artist/:mbid" component={SetlistDisplay} />
           <Redirect to={"/"} />
         </Switch>
       </React.Fragment>

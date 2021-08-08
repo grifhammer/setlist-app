@@ -6,7 +6,7 @@ export const GetPopularArtists = (page: number) => {
       });
 
       const res = await fetch(
-        `https://api.griffinhammer.com/searchArtist?artist=${elohim}`
+        `https://api.griffinhammer.com/searchArtist?artist=elohim`
       );
       const data = res.json();
       dispatch({
@@ -14,6 +14,7 @@ export const GetPopularArtists = (page: number) => {
         payload: data,
       });
     } catch (err) {
+      console.error(err);
       dispatch({
         type: "POPULAR_ARTSITS_FAIL",
       });
