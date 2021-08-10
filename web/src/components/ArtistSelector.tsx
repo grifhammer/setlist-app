@@ -1,13 +1,14 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 
 import Artist from "src/store/artist/types";
-import ISetlist from "src/models/Setlist";
-
-// import SetlistDisplay from "./SetlistDisplay";
 
 import "./ArtistSelector.css";
-import SetlistDisplay from "./SetlistDisplay";
 import { History, Location } from "history";
+import { useDispatch, useSelector } from "react-redux";
+import { searchArtist, searchSetlists } from "src/reducers/ArtistReducer";
+import { useParams } from "react-router-dom";
+import ISetlist from "src/models/Setlist";
+import SetlistDisplay from "./SetlistDisplay";
 
 interface ArtistSelectorProps {
   history: History;
@@ -15,27 +16,37 @@ interface ArtistSelectorProps {
 }
 
 const ArtistSelector: FunctionComponent<ArtistSelectorProps> = ({
-  location: {
-    state: { artists, ...state },
-  },
   ...props
 }) => {
-  if (artists.length <= 0) {
+  const { artist } = useParams();
+  const dispatch = useDispatch();
+  const { artists, setlists } = useSelector((store) => {
+    console.log(store);
+    return store.Artist;
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await searchArtist(artist)(dispatch);
+    };
+    fetchData();
+  }, [artist, dispatch]);
+  if (!artists || artists.length <= 0) {
     return null;
   }
   const artistElements = artists.map((artist: Artist) => {
     return (
       <div
         className="artist-selector"
-        onClick={() => props.history.push("/")}
+        onClick={() => {
+          searchSetlists(artist.mbid)(dispatch);
+        }}
         key={artist.mbid}
       >
         {artist.name} {artist.disambiguation}
-        {/* {state.selectedArtist &&
-          state.selectedArtist === artist.mbid &&
-          state.setlists.map((result: ISetlist) => {
-            return <SetlistDisplay key={result.id} setlist={result} />;
-          })} */}
+        {setlists[artist.mbid].map((result: ISetlist) => {
+          return <SetlistDisplay key={result.id} setlist={result} />;
+        })}
       </div>
     );
   });

@@ -8,7 +8,9 @@ export default function configureStore(preloadedState: any) {
   const store = createStore(
     createRootReducer(history), // root reducer with router state
     preloadedState,
-    compose(applyMiddleware(routerMiddleware(history)))
+    compose(applyMiddleware(routerMiddleware(history))) +
+      window.__REDUX_DEVTOOLS_EXTENSION__ &&
+      window.__REDUX_DEVTOOLS_EXTENSION__()
   );
 
   return store;
