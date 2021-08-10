@@ -8,13 +8,19 @@ interface ISetlistDisplayProps {
 const SetlistDisplay: FunctionComponent<ISetlistDisplayProps> = ({
   setlist: {
     eventDate,
+    venue,
     sets: { set },
     ...setlist
   },
 }) => {
   console.log(setlist);
   if (set.length > 0) {
-    return <div>{eventDate}</div>;
+    return (
+      <div>
+        {venue.name}
+        {eventDate}
+      </div>
+    );
   }
   return null;
 };
