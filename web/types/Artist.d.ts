@@ -1,5 +1,5 @@
 export interface Artist {
-  mbbid: string;
+  mbid: string;
   tmid: number;
   name: string;
   sortName: string;

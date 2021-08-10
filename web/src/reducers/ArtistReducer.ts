@@ -2,12 +2,19 @@ import { Reducer, Dispatch } from "redux";
 
 import { baseUrl } from "../settings";
 import { Artist } from "types";
+import ISetlist from "src/models/Setlist";
 const SET_ARTISTS = "search/artist/SET_ARTIST";
 const SET_SETLISTS = "search/setlist/SET_SETLISTS";
 const LOADING_ARTISTS = "search/artist/LOADING";
 const LOADING_SETLISTS = "search/setlist/LOADING";
-
-const DefaultState = {
+export interface ArtistState {
+  loading: boolean;
+  artists: Artist[];
+  setlists: { [key: string]: ISetlist[] };
+  errorMsg: string;
+  count: number;
+}
+const DefaultState: ArtistState = {
   loading: false,
   artists: [],
   setlists: {},

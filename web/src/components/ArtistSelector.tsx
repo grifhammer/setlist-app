@@ -1,11 +1,15 @@
 import React, { FunctionComponent, useEffect } from "react";
 
-import Artist from "src/store/artist/types";
+import { Artist } from "types";
 
 import "./ArtistSelector.css";
 import { History, Location } from "history";
 import { useDispatch, useSelector } from "react-redux";
-import { searchArtist, searchSetlists } from "src/reducers/ArtistReducer";
+import {
+  searchArtist,
+  searchSetlists,
+  ArtistState,
+} from "src/reducers/ArtistReducer";
 import { useParams } from "react-router-dom";
 import ISetlist from "src/models/Setlist";
 import SetlistDisplay from "./SetlistDisplay";
@@ -20,10 +24,12 @@ const ArtistSelector: FunctionComponent<ArtistSelectorProps> = ({
 }) => {
   const { artist } = useParams();
   const dispatch = useDispatch();
-  const { artists, setlists } = useSelector((store) => {
-    console.log(store);
-    return store.Artist;
-  });
+  const { artists, setlists } = useSelector<{ Artist: any }, ArtistState>(
+    (store) => {
+      console.log(store);
+      return store.Artist;
+    }
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,7 +40,7 @@ const ArtistSelector: FunctionComponent<ArtistSelectorProps> = ({
   if (!artists || artists.length <= 0) {
     return null;
   }
-  const artistElements = artists.map((artist: Artist) => {
+  const artistElements = artists.map((artist) => {
     return (
       <div
         className="artist-selector"
