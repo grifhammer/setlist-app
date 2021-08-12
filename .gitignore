@@ -5,3 +5,5 @@ web/.eslintcache
 serverless-backend/bin
 serverless-backend/.aws-sam
 *.swp
+*.d.ts
+!**/types/**/*.d.ts

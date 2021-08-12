@@ -9,7 +9,6 @@ import { ArtistSearch } from "../../types/setlist-fm";
 interface SearchArtistEnv extends NodeJS.ProcessEnv {
   SETLIST_FM_KEY?: string;
 }
-process.env;
 
 interface SearchArtistRequestBody
   extends APIGatewayProxyEventQueryStringParameters {
@@ -25,7 +24,6 @@ export const searchArtistHandler: APIGatewayProxyHandlerV2<[Artist]> = async (
   console.info(event);
   const { queryStringParameters } = event;
   const { artist }: SearchArtistRequestBody = queryStringParameters!;
-  console.info(SETLIST_FM_KEY);
   // make proxy request
   if (!SETLIST_FM_KEY) {
     throw new Error("Missing Setlist FM API Key");
