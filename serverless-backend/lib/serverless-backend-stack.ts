@@ -3,7 +3,7 @@ import { HttpApi, HttpMethod, DomainName } from "@aws-cdk/aws-apigatewayv2";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 import { SecretValue } from "@aws-cdk/core";
 import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
-import { Function, Runtime, Code } from "@aws-cdk/aws-lambda";
+import { Runtime } from "@aws-cdk/aws-lambda";
 import { WatchableNodejsFunction } from "cdk-watch";
 export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -57,6 +57,23 @@ export class ServerlessBackendStack extends cdk.Stack {
       }
     );
 
+    const buildPlaylistLambda = new WatchableNodejsFunction(
+      this,
+      "buildPlaylist",
+      {
+        entry: "./lambda/BuildPlaylist/index.ts",
+        handler: "BuildPlaylistHandler",
+        environment: {
+          SPOTIFY_KEY: spotifyKey,
+        },
+        runtime: Runtime.NODEJS_14_X,
+      }
+    );
+
+    const buildPlaylistIntegration = new LambdaProxyIntegration({
+      handler: buildPlaylistLambda,
+    });
+
     const searchArtistIntegration = new LambdaProxyIntegration({
       handler: searchArtistLambda,
     });
@@ -75,6 +92,11 @@ export class ServerlessBackendStack extends cdk.Stack {
       path: "/setlists",
       methods: [HttpMethod.GET],
       integration: searchSetlistIntegration,
+    });
+    api.addRoutes({
+      path: "/buildPlaylist",
+      methods: [HttpMethod.POST],
+      integration: buildPlaylistIntegration,
     });
   }
 }
