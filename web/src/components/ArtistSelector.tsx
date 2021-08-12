@@ -22,7 +22,7 @@ interface ArtistSelectorProps {
 const ArtistSelector: FunctionComponent<ArtistSelectorProps> = ({
   ...props
 }) => {
-  const { artist } = useParams();
+  const { artist } = useParams<{ artist: string }>();
   const dispatch = useDispatch();
   const { artists, setlists } = useSelector<{ Artist: any }, ArtistState>(
     (store) => {

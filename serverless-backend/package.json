@@ -26,12 +26,14 @@
     "@aws-cdk/aws-apigatewayv2": "^1.93.0",
     "@aws-cdk/aws-apigatewayv2-integrations": "^1.93.0",
     "@aws-cdk/aws-certificatemanager": "^1.93.0",
+    "@aws-cdk/aws-dynamodb": "^1.118.0",
     "@aws-cdk/aws-lambda": "^1.93.0",
     "@aws-cdk/aws-lambda-nodejs": "^1.93.0",
     "@aws-cdk/aws-route53": "^1.93.0",
     "@aws-cdk/aws-route53-targets": "^1.93.0",
     "@aws-cdk/core": "^1.93.0",
     "aws-lambda": "^1.0.6",
+    "cdk-watch": "^0.0.24",
     "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.19"
   }

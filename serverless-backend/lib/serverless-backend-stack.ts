@@ -2,33 +2,60 @@ import * as cdk from "@aws-cdk/core";
 import { HttpApi, HttpMethod, DomainName } from "@aws-cdk/aws-apigatewayv2";
 import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 import { SecretValue } from "@aws-cdk/core";
+import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
 import { Function, Runtime, Code } from "@aws-cdk/aws-lambda";
-
+import { WatchableNodejsFunction } from "cdk-watch";
 export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const oneTable = new Table(this, "oneTable", {
+      partitionKey: {
+        name: "pk",
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: "sk",
+        type: AttributeType.STRING,
+      },
+      tableName: "theOneTable",
+      readCapacity: 2,
+      writeCapacity: 2,
+    });
+
     const setlistFMKey = SecretValue.secretsManager("API_KEYS", {
       jsonField: "SETLIST_FM",
     }).toString();
-    const searchArtistLambda = new Function(this, "searchArtists", {
-      runtime: Runtime.NODEJS_14_X,
-      code: Code.fromAsset("./lambda/ArtistSearch", {}),
-      // entry: "./lambda/artist-search.ts",
-      handler: "artist-search.searchArtistHandler",
-      environment: {
-        SETLIST_FM_KEY: setlistFMKey,
-      },
-    });
 
-    const searchSetlistLambda = new Function(this, "searchSetlists", {
-      code: Code.fromAsset("./lambda/SetlistSearch"),
-      handler: "setlist-search.searchSetlistHandler",
-      environment: {
-        SETLIST_FM_KEY: setlistFMKey,
-      },
-      runtime: Runtime.NODEJS_14_X,
-    });
+    const spotifyKey = SecretValue.secretsManager("API_KEYS", {
+      jsonField: "SPOTIFY",
+    }).toString();
+
+    const searchArtistLambda = new WatchableNodejsFunction(
+      this,
+      "searchArtists",
+      {
+        runtime: Runtime.NODEJS_14_X,
+        entry: "./lambda/ArtistSearch/artist-search.ts",
+        handler: "searchArtistHandler",
+        environment: {
+          SETLIST_FM_KEY: setlistFMKey,
+        },
+      }
+    );
+
+    const searchSetlistLambda = new WatchableNodejsFunction(
+      this,
+      "searchSetlists",
+      {
+        handler: "searchSetlistHandler",
+        entry: "./lambda/SetlistSearch/setlist-search.ts",
+        environment: {
+          SETLIST_FM_KEY: setlistFMKey,
+        },
+        runtime: Runtime.NODEJS_14_X,
+      }
+    );
 
     const searchArtistIntegration = new LambdaProxyIntegration({
       handler: searchArtistLambda,
@@ -37,22 +64,7 @@ export class ServerlessBackendStack extends cdk.Stack {
     const searchSetlistIntegration = new LambdaProxyIntegration({
       handler: searchSetlistLambda,
     });
-    // const apiCert = Certificate.fromCertificateArn(
-    //   this,
-    //   "apiCert",
-    //   "arn:aws:acm:us-west-2:293729433005:certificate/a0beb7c3-5be5-4e58-87ce-92424af85d9b"
-    // );
-
-    // const apiDomain = new DomainName(this, "apiDomainName", {
-    //   domainName: "api.griffinsight.com",
-    //   certificate: apiCert,
-    // });
-
-    const api = new HttpApi(this, "SetlistAppApi", {
-      // defaultDomainMapping: {
-      //   domainName: apiDomain,
-      // },
-    });
+    const api = new HttpApi(this, "SetlistAppApi", {});
 
     api.addRoutes({
       path: "/searchArtist",
