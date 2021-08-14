@@ -5,6 +5,7 @@ import { SecretValue } from "@aws-cdk/core";
 import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
 import { Runtime } from "@aws-cdk/aws-lambda";
 import { WatchableNodejsFunction } from "cdk-watch";
+import { APILambda } from "./construct/APILambda";
 export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -31,72 +32,57 @@ export class ServerlessBackendStack extends cdk.Stack {
       jsonField: "SPOTIFY",
     }).toString();
 
-    const searchArtistLambda = new WatchableNodejsFunction(
+    const api = new HttpApi(this, "SetlistAppApi", {});
+
+    const { lambda: searchArtistLambda } = new APILambda(
       this,
       "searchArtists",
       {
-        runtime: Runtime.NODEJS_14_X,
-        entry: "./lambda/ArtistSearch/artist-search.ts",
-        handler: "searchArtistHandler",
-        environment: {
-          SETLIST_FM_KEY: setlistFMKey,
+        lambdaProps: {
+          entry: "./lambda/ArtistSearch/artist-search.ts",
+          handler: "searchArtistHandler",
+          environment: {
+            SETLIST_FM_KEY: setlistFMKey,
+          },
         },
+        api,
+        apiMethodProps: { path: "/searchArtist", methods: [HttpMethod.GET] },
       }
     );
 
-    const searchSetlistLambda = new WatchableNodejsFunction(
+    const { lambda: searchSetlistLambda } = new APILambda(
       this,
       "searchSetlists",
       {
-        handler: "searchSetlistHandler",
-        entry: "./lambda/SetlistSearch/setlist-search.ts",
-        environment: {
-          SETLIST_FM_KEY: setlistFMKey,
+        lambdaProps: {
+          handler: "searchSetlistHandler",
+          entry: "./lambda/SetlistSearch/setlist-search.ts",
+          environment: {
+            SETLIST_FM_KEY: setlistFMKey,
+          },
         },
-        runtime: Runtime.NODEJS_14_X,
+        api,
+        apiMethodProps: { path: "/setlists", methods: [HttpMethod.GET] },
       }
     );
 
-    const buildPlaylistLambda = new WatchableNodejsFunction(
+    const { lambda: buildPlaylistLambda } = new APILambda(
       this,
       "buildPlaylist",
       {
-        entry: "./lambda/BuildPlaylist/index.ts",
-        handler: "BuildPlaylistHandler",
-        environment: {
-          SPOTIFY_KEY: spotifyKey,
+        lambdaProps: {
+          entry: "./lambda/BuildPlaylist/index.ts",
+          handler: "BuildPlaylistHandler",
+          environment: {
+            SPOTIFY_KEY: spotifyKey,
+          },
         },
-        runtime: Runtime.NODEJS_14_X,
+        api,
+        apiMethodProps: {
+          path: "/buildPlaylist",
+          methods: [HttpMethod.POST],
+        },
       }
     );
-
-    const buildPlaylistIntegration = new LambdaProxyIntegration({
-      handler: buildPlaylistLambda,
-    });
-
-    const searchArtistIntegration = new LambdaProxyIntegration({
-      handler: searchArtistLambda,
-    });
-
-    const searchSetlistIntegration = new LambdaProxyIntegration({
-      handler: searchSetlistLambda,
-    });
-    const api = new HttpApi(this, "SetlistAppApi", {});
-
-    api.addRoutes({
-      path: "/searchArtist",
-      methods: [HttpMethod.GET],
-      integration: searchArtistIntegration,
-    });
-    api.addRoutes({
-      path: "/setlists",
-      methods: [HttpMethod.GET],
-      integration: searchSetlistIntegration,
-    });
-    api.addRoutes({
-      path: "/buildPlaylist",
-      methods: [HttpMethod.POST],
-      integration: buildPlaylistIntegration,
-    });
   }
 }
