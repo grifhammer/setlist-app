@@ -3,17 +3,17 @@ import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
 import { Runtime } from "@aws-cdk/aws-lambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import { Construct } from "@aws-cdk/core";
-import { WatchableNodejsFunction } from "cdk-watch";
+import {
+  WatchableNodejsFunction,
+  WatchableNodejsFunctionProps,
+} from "cdk-watch";
 
 interface APILambdaProps {
   api: HttpApi;
-  lambdaProps: {
-    entry: string;
-    handler: string;
-    environment: { [key: string]: string };
-  };
+  lambdaProps: WatchableNodejsFunctionProps;
   apiMethodProps: { path: string; methods: HttpMethod[] };
 }
+
 export class APILambda extends Construct {
   lambda: NodejsFunction;
   constructor(scope: Construct, id: string, props: APILambdaProps) {

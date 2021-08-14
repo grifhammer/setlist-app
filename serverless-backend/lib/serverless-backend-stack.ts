@@ -6,6 +6,7 @@ import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
 import { Runtime } from "@aws-cdk/aws-lambda";
 import { WatchableNodejsFunction } from "cdk-watch";
 import { APILambda } from "./construct/APILambda";
+import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -84,5 +85,23 @@ export class ServerlessBackendStack extends cdk.Stack {
         },
       }
     );
+
+    const { lambda: loginLambda } = new APILambda(this, "Login", {
+      lambdaProps: {
+        entry: "./lambda/Login/index.ts",
+        handler: "LoginHandler",
+        environment: {
+          SPOTIFY_KEY: spotifyKey,
+          TABLE_NAME: oneTable.tableName,
+        },
+      },
+      api,
+      apiMethodProps: {
+        path: "/login",
+        methods: [HttpMethod.POST],
+      },
+    });
+
+    oneTable.grantReadWriteData(loginLambda);
   }
 }
