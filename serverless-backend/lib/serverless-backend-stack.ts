@@ -7,6 +7,13 @@ import { Runtime } from "@aws-cdk/aws-lambda";
 import { WatchableNodejsFunction } from "cdk-watch";
 import { APILambda } from "./construct/APILambda";
 import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
+import {
+  App,
+  BasicAuth,
+  CustomRule,
+  GitHubSourceCodeProvider,
+  RedirectStatus,
+} from "@aws-cdk/aws-amplify";
 export class ServerlessBackendStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -24,6 +31,40 @@ export class ServerlessBackendStack extends cdk.Stack {
       readCapacity: 2,
       writeCapacity: 2,
     });
+
+    const amplifyApp = new App(this, "Website", {
+      appName: "Setlist Saver",
+      sourceCodeProvider: new GitHubSourceCodeProvider({
+        owner: "grifhammer",
+        repository: "setlist-app",
+        oauthToken: SecretValue.secretsManager("GithubToken", {
+          jsonField: "token",
+        }),
+      }),
+      autoBranchCreation: {
+        patterns: ["feature/"],
+        pullRequestPreview: false,
+        basicAuth: BasicAuth.fromCredentials(
+          "grifhammer",
+          SecretValue.secretsManager("ADMIN_CREDENTIALS", {
+            jsonField: "grifhammer",
+          })
+        ),
+        environmentVariables: {
+          REACT_APP_API_URL: "https://api.griffinhammer.com",
+        },
+      },
+      autoBranchDeletion: true,
+      customRules: [
+        new CustomRule({
+          source:
+            "</^[^.]+$|.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|ttf|map|json)$)([^.]+$)/>",
+          target: "/",
+          status: RedirectStatus.REWRITE,
+        }),
+      ],
+    });
+    amplifyApp.addBranch("develop");
 
     const setlistFMKey = SecretValue.secretsManager("API_KEYS", {
       jsonField: "SETLIST_FM",
