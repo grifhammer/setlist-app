@@ -2,7 +2,6 @@
 /server/.env
 /server/Rocket.toml
 web/.eslintcache
-serverless-backend/bin
 serverless-backend/.aws-sam
 *.swp
 *.d.ts
