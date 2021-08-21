@@ -1,12 +1,8 @@
 import * as cdk from "@aws-cdk/core";
-import { HttpApi, HttpMethod, DomainName } from "@aws-cdk/aws-apigatewayv2";
-import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
+import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2";
 import { SecretValue } from "@aws-cdk/core";
 import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
-import { Runtime } from "@aws-cdk/aws-lambda";
-import { WatchableNodejsFunction } from "cdk-watch";
 import { APILambda } from "./construct/APILambda";
-import { NodejsFunction } from "@aws-cdk/aws-lambda-nodejs";
 import {
 	App,
 	BasicAuth,
@@ -14,23 +10,45 @@ import {
 	GitHubSourceCodeProvider,
 	RedirectStatus,
 } from "@aws-cdk/aws-amplify";
+import { UserPool } from "@aws-cdk/aws-cognito";
+import {
+  IdentityPoolConstruct,
+  UserPoolClientConstruct,
+  UserPoolConstruct,
+} from "./construct/cognito";
+
 export class ServerlessBackendStack extends cdk.Stack {
 	constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props);
 
-		const oneTable = new Table(this, "oneTable", {
-			partitionKey: {
-				name: "pk",
-				type: AttributeType.STRING,
-			},
-			sortKey: {
-				name: "sk",
-				type: AttributeType.STRING,
-			},
-			tableName: "theOneTable",
-			readCapacity: 2,
-			writeCapacity: 2,
-		});
+    const { userPool } = new UserPoolConstruct(this, "userpool", {
+      appName: id,
+      frontendBaseUrl: "griffinhammer.com",
+    });
+    const { userPoolClient } = new UserPoolClientConstruct(
+      this,
+      "userpoolclient",
+      { userPool }
+    );
+    const { identityPool } = new IdentityPoolConstruct(this, "identitypool", {
+      appName: id,
+      userPool,
+      userPoolClient,
+    });
+
+    const oneTable = new Table(this, "oneTable", {
+      partitionKey: {
+        name: "pk",
+        type: AttributeType.STRING,
+      },
+      sortKey: {
+        name: "sk",
+        type: AttributeType.STRING,
+      },
+      tableName: "theOneTable",
+      readCapacity: 2,
+      writeCapacity: 2,
+    });
 
 		const amplifyApp = new App(this, "Website", {
 			appName: "Setlist Saver",
@@ -66,9 +84,14 @@ export class ServerlessBackendStack extends cdk.Stack {
 		});
 		amplifyApp.addBranch("develop", {});
 
-		const setlistFMKey = SecretValue.secretsManager("API_KEYS", {
-			jsonField: "SETLIST_FM",
-		}).toString();
+    new UserPool(this, "SetlistAppUsers", {
+      userPoolName: "SetlistAppUsers",
+      selfSignUpEnabled: true,
+    });
+
+    const setlistFMKey = SecretValue.secretsManager("API_KEYS", {
+      jsonField: "SETLIST_FM",
+    }).toString();
 
 		const spotifyKey = SecretValue.secretsManager("API_KEYS", {
 			jsonField: "SPOTIFY",
