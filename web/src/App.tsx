@@ -2,7 +2,11 @@ import * as React from "react";
 import Home from "./Home/index";
 import Login from "./Login";
 import { NavLink, Switch, Route, Redirect } from "react-router-dom";
-import { withAuthenticator, AmplifySignOut } from "@aws-amplify/ui-react";
+import {
+	withAuthenticator,
+	AmplifySignIn,
+	AmplifySignOut,
+} from "@aws-amplify/ui-react";
 import "./App.css";
 import SetlistDisplay from "./components/SetlistDisplay";
 import ArtistSelector from "./components/ArtistSelector";
@@ -19,6 +23,7 @@ class App extends React.Component<{}, {}> {
 			<React.Fragment>
 				<NavLink className="App-header" to="/">
 					Setlist Saver
+					<AmplifySignIn />
 					<AmplifySignOut />
 				</NavLink>
 				<Switch>
@@ -41,4 +46,4 @@ class App extends React.Component<{}, {}> {
 	}
 }
 
-export default withAuthenticator(App);
+export default App;
