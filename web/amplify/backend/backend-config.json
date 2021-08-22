@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "setlistsavera3802c76": {
+      "service": "Cognito",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  }
+}
