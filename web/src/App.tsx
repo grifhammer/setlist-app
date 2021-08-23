@@ -23,7 +23,6 @@ class App extends React.Component<{}, {}> {
 			<React.Fragment>
 				<NavLink className="App-header" to="/">
 					Setlist Saver
-					<AmplifySignIn />
 					<AmplifySignOut />
 				</NavLink>
 				<Switch>
