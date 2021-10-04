@@ -21,11 +21,11 @@ export class UserPoolClientConstruct extends cdk.Construct {
         familyName: true,
         email: true,
         emailVerified: false,
-        gender: true,
         nickname: true,
+        gender: false,
         preferredUsername: true,
-        timezone: true,
         lastUpdateTime: true,
+        timezone: true,
       })
       .withCustomAttributes("isAdmin");
 
@@ -34,12 +34,12 @@ export class UserPoolClientConstruct extends cdk.Construct {
         givenName: true,
         familyName: true,
         email: true,
+        gender: false,
         emailVerified: false,
-        gender: true,
         nickname: true,
         preferredUsername: true,
-        timezone: true,
         lastUpdateTime: true,
+        timezone: true,
       });
 
     this.userPoolClient = new cognito.UserPoolClient(this, "userpool-client", {
