@@ -1,16 +1,14 @@
-import React, { FunctionComponent, useState, useReducer } from "react";
+import React, { FunctionComponent, useState } from "react";
 import "./Home.css";
-import { HomeReducer } from "./HomeReducer";
 const Home: FunctionComponent<{ history: any }> = ({ history }) => {
   const [searchString, setSearch] = useState("");
-  const [state, dispatch] = useReducer(HomeReducer, {});
 
   return (
     <div>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          history.push(`/search/artist/${searchString}`, state);
+          history.push(`/search/artist/${searchString}`);
         }}
       >
         <label>
