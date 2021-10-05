@@ -8,6 +8,7 @@ import ArtistSelector from "./components/ArtistSelector";
 import Register from "./Register";
 import { useSelector } from "react-redux";
 import { UserState } from "./reducers/UserReducer";
+import { SignIn } from "./components/SignIn";
 
 const App: React.FunctionComponent<{}> = () => {
   const { loggedIn } = useSelector<{ User: any }, UserState>((store) => {
@@ -24,6 +25,7 @@ const App: React.FunctionComponent<{}> = () => {
         <Route exact path={"/"} component={Home} />
         <Route exact path={"/register"} component={Register} />
         <Route exact path={"/login"} component={Login} />
+        <Route exact path="/sign-in" component={SignIn} />
         <Route exact path="/search/artist/:artist" component={ArtistSelector} />
         <Route exact path="/artist/:mbid" component={SetlistDisplay} />
         <Redirect to={"/"} />
