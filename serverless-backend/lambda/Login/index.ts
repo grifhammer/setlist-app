@@ -6,7 +6,14 @@ interface LoginEnv extends NodeJS.ProcessEnv {
   REDIRECT_URI: string;
 }
 
-const requiredScopes: string[] = ["user-read-private", "user-read-email"];
+const requiredScopes: string[] = [
+  "user-read-private",
+  "user-read-email",
+  "playlist-modify-public",
+  "playlist-modify-private",
+  "playlist-read-private",
+  "playlist-read-collaborative",
+];
 
 const { REDIRECT_URI, SPOTIFY_CLIENT_ID } = process.env as LoginEnv;
 export const LoginHandler: APIGatewayProxyHandlerV2<{}> = async (event) => {

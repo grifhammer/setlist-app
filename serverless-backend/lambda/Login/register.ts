@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import fetch from "node-fetch";
 import { stringify } from "querystring";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 interface RegisterEnv extends NodeJS.ProcessEnv {
   TABLE_NAME: string;
   SPOTIFY_KEY: string;
@@ -19,6 +20,8 @@ interface SpotifyAuthToken {
   refresh_token: string;
   scope: string;
 }
+
+const dynamodb = new DocumentClient();
 
 export const RegisterHandler: APIGatewayProxyHandlerV2<{}> = async ({
   body,
@@ -48,13 +51,31 @@ export const RegisterHandler: APIGatewayProxyHandlerV2<{}> = async ({
   console.log(response);
   const data: SpotifyAuthToken = await response.json();
   console.log(data);
-  const thing = stringify({
-    ...data,
+  const now = new Date();
+  const spotifyUserResponse = await fetch(`https://api.spotify.com/v1/me`, {
+    headers: {
+      Authorization: `Bearer ${data.access_token}`,
+    },
   });
+  const userData = await spotifyUserResponse.json();
+  console.info("remember me", userData);
+  const putUserResult = await dynamodb
+    .put({
+      TableName: TABLE_NAME,
+      Item: {
+        pk: `u:${userData.email}`,
+        sk: `u:${userData.email}`,
+        ...data,
+        ...userData,
+        updatedAt: now.toISOString(),
+      },
+    })
+    .promise();
+  console.info("ddb put complete", putUserResult);
   return {
     statusCode: 302,
     headers: {
-      location: `http://localhost:3000/sign-in?${thing}`,
+      location: `http://localhost:3000/sign-in?${stringify({ ...userData })}`,
     },
   };
 };
