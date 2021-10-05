@@ -17,6 +17,7 @@ import {
   UserPoolConstruct,
 } from "./construct/cognito";
 
+const SPOTIFY_CLIENT_ID = "df6114c49120461ea1ec4eec20ce2334";
 export class ServerlessBackendStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -98,7 +99,12 @@ export class ServerlessBackendStack extends Stack {
       jsonField: "SPOTIFY",
     }).toString();
 
+    const spotifySecret = SecretValue.secretsManager("API_KEYS", {
+      jsonField: "SPOTIFY_SECRET",
+    }).toString();
+
     const api = new HttpApi(this, "SetlistAppApi", {});
+    const REDIRECT_URI = `https://api.griffinhammer.com/register`;
 
     const { lambda: searchArtistLambda } = new APILambda(
       this,
@@ -164,15 +170,36 @@ export class ServerlessBackendStack extends Stack {
         environment: {
           SPOTIFY_KEY: spotifyKey,
           TABLE_NAME: oneTable.tableName,
+          REDIRECT_URI,
+          SPOTIFY_CLIENT_ID,
         },
       },
       api,
       apiMethodProps: {
         path: "/login",
-        methods: [HttpMethod.POST],
+        methods: [HttpMethod.GET],
       },
     });
 
-    oneTable.grantReadWriteData(loginLambda);
+    const { lambda: registerLambda } = new APILambda(this, "Register", {
+      lambdaProps: {
+        entry: "./lambda/Login/register.ts",
+        handler: "RegisterHandler",
+        environment: {
+          TABLE_NAME: oneTable.tableName,
+          SPOTIFY_KEY: spotifyKey,
+          SPOTIFY_CLIENT_SECRET: spotifySecret,
+          REDIRECT_URI,
+          SPOTIFY_CLIENT_ID,
+        },
+      },
+      api,
+      apiMethodProps: {
+        path: "/register",
+        methods: [HttpMethod.GET],
+      },
+    });
+
+    oneTable.grantReadWriteData(registerLambda);
   }
 }

@@ -37,6 +37,7 @@
     "aws-lambda": "^1.0.6",
     "cdk-watch": "^0.0.24",
     "node-fetch": "^2.6.1",
+    "querystring": "^0.2.1",
     "source-map-support": "^0.5.19"
   }
 }
