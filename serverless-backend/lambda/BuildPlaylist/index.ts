@@ -17,7 +17,8 @@ export const BuildPlaylistHandler: APIGatewayProxyHandlerV2<{}> = async (
 ) => {
   console.info(event);
   const { queryStringParameters } = event;
-  const { setlistId, token }: BuildPlaylistRequestBody = queryStringParameters!;
+  const { setlistId, token, userId }: BuildPlaylistRequestBody =
+    queryStringParameters!;
   // get songs out of this setlist
   // search for these songs
   // return these songs

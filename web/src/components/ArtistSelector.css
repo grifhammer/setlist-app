@@ -4,6 +4,7 @@
   display: inline-flex;
   flex-wrap: wrap;
   flex: 0 1 100%;
+  gap: 10px;
   margin: 3px;
   cursor: pointer;
   background: #f4a261;

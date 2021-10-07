@@ -26,9 +26,11 @@ const dynamodb = new DocumentClient();
 export const RegisterHandler: APIGatewayProxyHandlerV2<{}> = async ({
   body,
   queryStringParameters,
+  requestContext,
 }) => {
-  console.log(queryStringParameters);
+  console.log(body, requestContext, queryStringParameters);
   const { code, error, state } = queryStringParameters!;
+  const { timeEpoch } = requestContext;
   if (error) {
     console.error(error);
     return { statusCode: 500 };
@@ -51,7 +53,7 @@ export const RegisterHandler: APIGatewayProxyHandlerV2<{}> = async ({
   console.log(response);
   const data: SpotifyAuthToken = await response.json();
   console.log(data);
-  const now = new Date();
+  const now = new Date(timeEpoch);
   const spotifyUserResponse = await fetch(`https://api.spotify.com/v1/me`, {
     headers: {
       Authorization: `Bearer ${data.access_token}`,

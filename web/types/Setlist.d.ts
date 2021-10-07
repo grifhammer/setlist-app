@@ -8,6 +8,7 @@ export interface Setlist {
   venue: Venue;
   tour: Tour;
   sets: { set: [Set] };
+  set: Song[];
   info: string;
   url: string;
   id: string;

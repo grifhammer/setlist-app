@@ -3,7 +3,7 @@ import {
   APIGatewayProxyResultV2,
   APIGatewayProxyEventQueryStringParameters,
 } from "aws-lambda";
-import { SetlistSearch } from "../../types/setlist-fm";
+import { Set, SetlistSearch, Song } from "../../types/setlist-fm";
 import { Setlist } from "../../types/setlist-fm";
 import fetch, { Headers } from "node-fetch";
 interface SearchSetlistEnv extends NodeJS.ProcessEnv {
@@ -22,7 +22,6 @@ export const searchSetlistHandler: APIGatewayProxyHandlerV2<[Setlist]> = async (
   console.info(event);
   const { queryStringParameters } = event;
   const { artistMbid }: SearchSetlistRequestBody = queryStringParameters!;
-  let setlists: Setlist[] = [];
   if (!SETLIST_FM_KEY) {
     throw new Error("Missing Setlist FM API Key");
   }
@@ -39,12 +38,22 @@ export const searchSetlistHandler: APIGatewayProxyHandlerV2<[Setlist]> = async (
       headers,
     }
   );
-  let thing: SetlistSearch = await searchResult.json();
+  let { setlist: setlists }: SetlistSearch = await searchResult.json();
 
-  console.info(thing);
+  console.info(setlists);
+  const fixedSetlists = setlists.map((setlist) => {
+    const fullSet = setlist.sets.set.reduce<Song[]>((prev, { song }) => {
+      return [...prev, ...song];
+    }, []);
+    return { ...setlist, set: fullSet };
+  });
+  //persist this data and try to get it at the beginning of this lambda
+  //get user from db
+  //get spotify data
+  console.info(fixedSetlists);
   const response: APIGatewayProxyResultV2 = {
     statusCode: 200,
-    body: JSON.stringify(thing.setlist),
+    body: JSON.stringify(fixedSetlists),
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
