@@ -2,6 +2,8 @@
   padding: 8px 12px 8px 8px;
   border-radius: 40px;
   display: inline-flex;
+  flex-wrap: wrap;
+  flex: 0 1 100%;
   margin: 3px;
   cursor: pointer;
   background: #f4a261;
@@ -13,4 +15,8 @@
 }
 .artist-selector:nth-child(3n + 2) {
   background: #e76f51;
+}
+
+.artist-display {
+  font-weight: bold;
 }

@@ -49,7 +49,9 @@ const ArtistSelector: FunctionComponent<ArtistSelectorProps> = ({
         }}
         key={artist.mbid}
       >
-        {artist.name} {artist.disambiguation}
+        <h2 className="artist-details">
+          {artist.name} {artist.disambiguation}
+        </h2>
         {setlists[artist.mbid].map((result: ISetlist) => {
           return <SetlistDisplay key={result.id} setlist={result} />;
         })}
