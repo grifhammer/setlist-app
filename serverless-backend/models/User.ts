@@ -27,15 +27,15 @@ export class User {
 	@attribute()
 	explicit_content: string;
 	@attribute()
-	external_urls: any;
+	external_urls: { spotify: string };
 	@attribute()
-	followers: any;
+	followers: { href: string; total: number };
 	@attribute()
 	href: string;
 	@attribute()
 	id: string;
 	@attribute()
-	images: any;
+	images: { height: number; width: number; url: string };
 	@attribute()
 	product: string;
 	@attribute()
