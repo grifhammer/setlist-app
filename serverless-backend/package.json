@@ -37,10 +37,12 @@
     "@aws/dynamodb-data-mapper": "^0.7.3",
     "@aws/dynamodb-data-mapper-annotations": "^0.7.3",
     "@types/aws-sdk": "^2.7.0",
+    "@types/moment": "^2.13.0",
     "@types/spotify-api": "^0.0.11",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.1000.0",
     "cdk-watch": "^0.0.24",
+    "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "querystring": "^0.2.1",
     "source-map-support": "^0.5.19"

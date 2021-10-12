@@ -1,4 +1,4 @@
-import { Construct, Stack, StackProps } from "@aws-cdk/core";
+import { Construct, Duration, Stack, StackProps } from "@aws-cdk/core";
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2";
 import { SecretValue } from "@aws-cdk/core";
 import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
@@ -138,6 +138,7 @@ export class ServerlessBackendStack extends Stack {
 					environment: {
 						SETLIST_FM_KEY: setlistFMKey,
 					},
+					timeout: Duration.minutes(1),
 				},
 				api,
 				apiMethodProps: {
