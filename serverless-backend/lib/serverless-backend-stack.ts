@@ -1,7 +1,7 @@
-import { Construct, Duration, Stack, StackProps } from "@aws-cdk/core";
-import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2";
-import { SecretValue } from "@aws-cdk/core";
-import { Table, AttributeType } from "@aws-cdk/aws-dynamodb";
+import { Construct, Duration, Stack, StackProps } from "aws-cdk-lib/lib/core";
+import { HttpApi, HttpMethod } from "aws-cdk-lib/lib/aws-apigatewayv2";
+import { SecretValue } from "aws-cdk-lib/lib/core";
+import { Table, AttributeType } from "aws-cdk-lib/lib/aws-dynamodb";
 import { APILambda } from "./construct/APILambda";
 import {
 	App,
@@ -9,8 +9,8 @@ import {
 	CustomRule,
 	GitHubSourceCodeProvider,
 	RedirectStatus,
-} from "@aws-cdk/aws-amplify";
-import { UserPool } from "@aws-cdk/aws-cognito";
+} from "aws-cdk-lib/lib/aws-amplify";
+import { UserPool } from "aws-cdk-lib/lib/aws-cognito";
 import {
 	IdentityPoolConstruct,
 	UserPoolClientConstruct,
