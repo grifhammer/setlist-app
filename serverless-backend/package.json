@@ -1,5 +1,5 @@
 {
-  "name": "serverless-backend",
+  "name": "setlist-app-serverless-backend",
   "bin": {
     "serverless-backend.d.ts": "bin/serverless-backend.d.ts",
     "serverless-backend.js": "bin/serverless-backend.js",

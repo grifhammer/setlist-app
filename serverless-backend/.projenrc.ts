@@ -2,7 +2,7 @@ import { awscdk } from "projen";
 const project = new awscdk.AwsCdkTypeScriptApp({
 	cdkVersion: "2.1.0",
 	defaultReleaseBranch: "main",
-	name: "serverless-backend",
+	name: "setlist-app-serverless-backend",
 	projenrcTs: true,
 	tsconfig: {
 		compilerOptions: {
