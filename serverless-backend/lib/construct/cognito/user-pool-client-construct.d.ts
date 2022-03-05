@@ -1,5 +1,5 @@
-import * as cognito from "@aws-cdk/aws-cognito";
-import * as cdk from "@aws-cdk/core";
+import * as cognito from "aws-cdk-lib/lib/aws-cognito";
+import * as cdk from "aws-cdk-lib/lib/core";
 declare type UserPoolClientConstructProps = {
     userPool: cognito.UserPool;
 };
