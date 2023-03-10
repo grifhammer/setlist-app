@@ -43,7 +43,7 @@
     "aws-sdk": "^2.1000.0",
     "cdk-watch": "^0.0.24",
     "moment": "^2.29.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "querystring": "^0.2.1",
     "source-map-support": "^0.5.19"
   }
